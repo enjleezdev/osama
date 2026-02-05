@@ -1,0 +1,11 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "hero-service",
+      "description": "Professional technician repairing a digital device",
+      "imageUrl": "https://picsum.photos/seed/service1/1200/600",
+      "imageHint": "device repair"
+    }
+  ]
+}
