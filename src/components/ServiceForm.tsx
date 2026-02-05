@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -27,11 +26,20 @@ import { ServiceType } from '@/app/lib/types';
 import { BatteryCharging, Settings, Code, Save } from 'lucide-react';
 
 const formSchema = z.object({
-  barcode: z.string().min(1, "Barcode is required"),
-  deviceName: z.string().min(2, "Device name must be at least 2 characters"),
-  customerName: z.string().min(2, "Customer name is required"),
+  barcode: z.string().min(1, "الباركود مطلوب"),
+  deviceName: z.string().min(2, "اسم الجهاز يجب أن يكون حرفين على الأقل"),
+  customerName: z.string().min(2, "اسم العميل مطلوب"),
   serviceType: z.enum(['Charging', 'Maintenance', 'Software'] as const),
-  description: z.string().min(5, "Please provide a brief description of the issue"),
+  description: z.string().optional(),
+}).refine((data) => {
+  // إذا لم تكن الخدمة "شحن"، فإن الوصف يصبح إجبارياً (على الأقل 5 أحرف)
+  if (data.serviceType !== 'Charging') {
+    return data.description && data.description.length >= 5;
+  }
+  return true;
+}, {
+  message: "يرجى تقديم وصف مختصر للمشكلة",
+  path: ["description"],
 });
 
 interface ServiceFormProps {
@@ -52,15 +60,17 @@ export function ServiceForm({ initialBarcode, onSubmit, onCancel }: ServiceFormP
     },
   });
 
+  const serviceType = form.watch('serviceType');
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-2">
+    <div className="space-y-6 text-right" dir="rtl">
+      <div className="flex items-center gap-2 justify-end">
+        <div>
+          <h2 className="text-xl font-semibold">نموذج طلب الخدمة</h2>
+          <p className="text-sm text-muted-foreground">تسجيل جهاز جديد في النظام</p>
+        </div>
         <div className="p-2 bg-primary/10 rounded-full text-primary">
           <Settings className="w-5 h-5" />
-        </div>
-        <div>
-          <h2 className="text-xl font-semibold">Service Request Form</h2>
-          <p className="text-sm text-muted-foreground">Log a new device for service</p>
         </div>
       </div>
 
@@ -71,9 +81,9 @@ export function ServiceForm({ initialBarcode, onSubmit, onCancel }: ServiceFormP
             name="barcode"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Barcode ID</FormLabel>
+                <FormLabel>رقم الباركود</FormLabel>
                 <FormControl>
-                  <Input placeholder="Scan or enter barcode" {...field} readOnly={!!initialBarcode} />
+                  <Input placeholder="امسح أو أدخل الباركود" {...field} readOnly={!!initialBarcode} className="text-right" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -86,9 +96,9 @@ export function ServiceForm({ initialBarcode, onSubmit, onCancel }: ServiceFormP
               name="deviceName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Device Model</FormLabel>
+                  <FormLabel>موديل الجهاز</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., iPhone 13 Pro" {...field} />
+                    <Input placeholder="مثال: iPhone 13 Pro" {...field} className="text-right" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -99,9 +109,9 @@ export function ServiceForm({ initialBarcode, onSubmit, onCancel }: ServiceFormP
               name="customerName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Customer Name</FormLabel>
+                  <FormLabel>اسم العميل</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter full name" {...field} />
+                    <Input placeholder="أدخل الاسم بالكامل" {...field} className="text-right" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -114,30 +124,30 @@ export function ServiceForm({ initialBarcode, onSubmit, onCancel }: ServiceFormP
             name="serviceType"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Service Category</FormLabel>
+                <FormLabel>فئة الخدمة</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select service category" />
+                    <SelectTrigger className="flex-row-reverse">
+                      <SelectValue placeholder="اختر فئة الخدمة" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
+                  <SelectContent align="end">
                     <SelectItem value="Charging">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-row-reverse">
                         <BatteryCharging className="w-4 h-4 text-orange-500" />
-                        <span>Charging</span>
+                        <span>شحن الهاتف</span>
                       </div>
                     </SelectItem>
                     <SelectItem value="Maintenance">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-row-reverse">
                         <Settings className="w-4 h-4 text-blue-500" />
-                        <span>Maintenance</span>
+                        <span>صيانة هاردوير</span>
                       </div>
                     </SelectItem>
                     <SelectItem value="Software">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-row-reverse">
                         <Code className="w-4 h-4 text-purple-500" />
-                        <span>Software</span>
+                        <span>برمجة / سوفتوير</span>
                       </div>
                     </SelectItem>
                   </SelectContent>
@@ -147,31 +157,33 @@ export function ServiceForm({ initialBarcode, onSubmit, onCancel }: ServiceFormP
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Issue Description</FormLabel>
-                <FormControl>
-                  <Textarea 
-                    placeholder="Describe the problem or service needed..." 
-                    className="min-h-[100px]"
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {serviceType !== 'Charging' && (
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>وصف المشكلة</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="صف المشكلة أو الخدمة المطلوبة بالتفصيل..." 
+                      className="min-h-[100px] text-right"
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
-          <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button type="button" variant="outline" onClick={onCancel}>
-              Cancel
-            </Button>
+          <div className="flex justify-start gap-3 pt-4 border-t">
             <Button type="submit" className="bg-accent hover:bg-accent/90">
-              <Save className="w-4 h-4 mr-2" />
-              Save Record
+              <Save className="w-4 h-4 ml-2" />
+              حفظ السجل
+            </Button>
+            <Button type="button" variant="outline" onClick={onCancel}>
+              إلغاء
             </Button>
           </div>
         </form>
