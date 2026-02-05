@@ -98,7 +98,7 @@ export default function Home() {
               <ArrowRight className="w-5 h-5" />
             </Button>
           )}
-          <h1 className="text-xl font-bold tracking-tight text-primary">ServiceFlow</h1>
+          <h1 className="text-xl font-bold tracking-tight text-primary">OSAMA TECH</h1>
         </div>
         
         <div className="flex items-center gap-2">

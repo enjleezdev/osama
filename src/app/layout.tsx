@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'ServiceFlow | Professional Service Management',
+  title: 'OSAMA TECH | Professional Service Management',
   description: 'Streamlined device service tracking with barcode integration.',
 };
 
