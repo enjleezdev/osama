@@ -65,7 +65,7 @@ export default function Home() {
     addRecord(data);
     setShowForm(false);
     setScannedBarcode(null);
-    setActiveSection('Menu'); // Stay on menu to see the new device
+    setActiveSection('Menu');
     toast({
       title: "تم تسجيل الخدمة",
       description: "تمت إضافة الجهاز إلى قائمة الانتظار النشطة.",
@@ -74,7 +74,7 @@ export default function Home() {
 
   const menuItems = [
     { id: 'Archive', icon: History, label: 'الأرشيف', color: 'bg-orange-500' },
-    { id: 'Reports', icon: BarChart3, label: 'التقارير', color: 'bg-purple-500' },
+    { id: 'Reports', icon: BarChart3, label: 'التقارير', color: 'bg-[#23b936]' },
   ] as const;
 
   if (!isLoaded) return (
@@ -90,7 +90,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FB] text-foreground flex flex-col overflow-x-hidden w-full max-w-full">
-      {/* Header Bar */}
       <header className="h-16 bg-white border-b flex items-center justify-between px-4 sticky top-0 z-50 w-full shrink-0">
         <div className="flex items-center gap-2">
           {activeSection !== 'Menu' && (
@@ -114,13 +113,11 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Content Area */}
       <main className="flex-1 w-full max-w-full overflow-x-hidden p-4">
         <div className="max-w-md mx-auto space-y-6">
           
           {activeSection === 'Menu' && (
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              {/* Main Scan Action */}
               <div className="space-y-4 pt-2">
                 <Button 
                   className="w-full h-24 rounded-2xl bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 flex flex-col items-center justify-center gap-2"
@@ -131,7 +128,6 @@ export default function Home() {
                 </Button>
               </div>
 
-              {/* Dashboard Content (Active Devices) - Now part of Menu */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between px-1">
                   <div className="text-right">
@@ -155,7 +151,6 @@ export default function Home() {
                 />
               </div>
 
-              {/* Navigation Row (Archive & Reports) */}
               <div className="grid grid-cols-2 gap-4">
                 {menuItems.map((item) => (
                   <button
@@ -171,7 +166,6 @@ export default function Home() {
                 ))}
               </div>
 
-              {/* Manual Entry Quick Action */}
               <Card className="bg-accent/5 border-none shadow-none rounded-2xl">
                 <CardContent className="p-4 flex items-center justify-between">
                   <div className="text-right">
@@ -226,7 +220,6 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Footer Branding */}
       <footer className="py-6 px-4 text-center border-t bg-white">
         <p className="text-sm text-gray-500 font-medium">
           تم التطوير بواسطة{" "}
@@ -241,7 +234,6 @@ export default function Home() {
         </p>
       </footer>
 
-      {/* New Service Entry Modal */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent className="w-[95vw] max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl">
           <DialogHeader>
@@ -258,7 +250,6 @@ export default function Home() {
         </DialogContent>
       </Dialog>
 
-      {/* Device Details Popup (Found Record) */}
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
         <DialogContent className="w-[92vw] max-w-md p-0 overflow-hidden border-none shadow-2xl rounded-3xl">
           {lookupDevice && (

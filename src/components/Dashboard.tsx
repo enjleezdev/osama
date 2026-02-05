@@ -24,7 +24,7 @@ export function Dashboard({ records, onArchive }: DashboardProps) {
   const categories = [
     { name: 'Charging', count: charging.length, icon: BatteryCharging, color: 'text-orange-500', bg: 'bg-orange-50', list: charging },
     { name: 'Maintenance', count: maintenance.length, icon: Settings, color: 'text-blue-500', bg: 'bg-blue-50', list: maintenance },
-    { name: 'Software', count: software.length, icon: Code, color: 'text-purple-500', bg: 'bg-purple-50', list: software },
+    { name: 'Software', count: software.length, icon: Code, color: 'text-[#23b936]', bg: 'bg-green-50', list: software },
   ];
 
   return (
@@ -67,30 +67,30 @@ export function Dashboard({ records, onArchive }: DashboardProps) {
                 {cat.list.map((record) => (
                   <Card key={record.id} className="overflow-hidden group hover:border-primary/50 transition-colors">
                     <div className="flex">
-                      <div className={`w-2 ${cat.color.replace('text', 'bg')}`} />
-                      <div className="flex-1 p-6">
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <div className="flex items-center gap-2 mb-1">
+                      <div className={`w-2 ${cat.color.startsWith('text-[#') ? 'bg-[#23b936]' : cat.color.replace('text', 'bg')}`} />
+                      <div className="flex-1 p-6 text-right">
+                        <div className="flex flex-row-reverse justify-between items-start mb-4">
+                          <div className="text-right">
+                            <div className="flex flex-row-reverse items-center gap-2 mb-1">
                               <h3 className="font-bold text-lg">{record.deviceName}</h3>
                               <Badge variant="outline" className="font-mono">{record.barcode}</Badge>
                             </div>
-                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                              <span className="flex items-center gap-1"><User className="w-3 h-3" /> {record.customerName}</span>
-                              <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {format(new Date(record.entryDate), 'MMM d, h:mm a')}</span>
+                            <div className="flex flex-row-reverse items-center gap-3 text-sm text-muted-foreground">
+                              <span className="flex flex-row-reverse items-center gap-1"><User className="w-3 h-3 ml-1" /> {record.customerName}</span>
+                              <span className="flex flex-row-reverse items-center gap-1"><Calendar className="w-3 h-3 ml-1" /> {format(new Date(record.entryDate), 'MMM d, h:mm a')}</span>
                             </div>
                           </div>
                           <Button 
                             variant="ghost" 
                             size="sm" 
-                            className="text-muted-foreground hover:text-accent hover:bg-accent/10"
+                            className="text-muted-foreground hover:text-accent hover:bg-accent/10 flex-row-reverse"
                             onClick={() => onArchive(record.id)}
                           >
-                            <Archive className="w-4 h-4 mr-1" />
-                            Complete & Archive
+                            <Archive className="w-4 h-4 ml-1" />
+                            إتمام وأرشفة
                           </Button>
                         </div>
-                        <p className="text-sm text-gray-600 line-clamp-2 bg-gray-50 p-3 rounded-md border">
+                        <p className="text-sm text-gray-600 line-clamp-2 bg-gray-50 p-3 rounded-md border text-right">
                           {record.description}
                         </p>
                       </div>

@@ -32,7 +32,6 @@ const formSchema = z.object({
   serviceType: z.enum(['Charging', 'Maintenance', 'Software'] as const),
   description: z.string().optional(),
 }).refine((data) => {
-  // إذا لم تكن الخدمة "شحن"، فإن الوصف يصبح إجبارياً (على الأقل 5 أحرف)
   if (data.serviceType !== 'Charging') {
     return data.description && data.description.length >= 5;
   }
@@ -146,7 +145,7 @@ export function ServiceForm({ initialBarcode, onSubmit, onCancel }: ServiceFormP
                     </SelectItem>
                     <SelectItem value="Software">
                       <div className="flex items-center gap-2 flex-row-reverse">
-                        <Code className="w-4 h-4 text-purple-500" />
+                        <Code className="w-4 h-4 text-[#23b936]" />
                         <span>برمجة / سوفتوير</span>
                       </div>
                     </SelectItem>
