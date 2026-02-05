@@ -10,10 +10,8 @@ import { Archive } from '@/components/Archive';
 import { Reports } from '@/components/Reports';
 import { 
   ScanBarcode, 
-  LayoutDashboard, 
   History, 
   BarChart3, 
-  ChevronLeft, 
   CheckCircle,
   X,
   Plus,
@@ -30,7 +28,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-type AppSection = 'Menu' | 'Scanner' | 'Dashboard' | 'Archive' | 'Reports';
+type AppSection = 'Menu' | 'Scanner' | 'Archive' | 'Reports';
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState<AppSection>('Menu');
@@ -67,7 +65,7 @@ export default function Home() {
     addRecord(data);
     setShowForm(false);
     setScannedBarcode(null);
-    setActiveSection('Dashboard');
+    setActiveSection('Menu'); // Stay on menu to see the new device
     toast({
       title: "تم تسجيل الخدمة",
       description: "تمت إضافة الجهاز إلى قائمة الانتظار النشطة.",
@@ -75,13 +73,13 @@ export default function Home() {
   };
 
   const menuItems = [
-    { id: 'Dashboard', icon: LayoutDashboard, label: 'لوحة التحكم', color: 'bg-blue-500' },
-    { id: 'Scanner', icon: ScanBarcode, label: 'ماسح الباركود', color: 'bg-primary' },
     { id: 'Archive', icon: History, label: 'الأرشيف', color: 'bg-orange-500' },
     { id: 'Reports', icon: BarChart3, label: 'التقارير', color: 'bg-purple-500' },
   ] as const;
 
   if (!isLoaded) return <div className="flex h-screen items-center justify-center font-bold">جاري التحميل...</div>;
+
+  const activeCount = records.filter(r => r.status === 'Active').length;
 
   return (
     <div className="min-h-screen bg-[#F8F9FB] text-foreground flex flex-col overflow-x-hidden w-full max-w-full">
@@ -124,11 +122,33 @@ export default function Home() {
                   <ScanBarcode className="w-8 h-8" />
                   <span className="text-lg font-bold">امسح الباركود</span>
                 </Button>
-                
-                <p className="text-center text-xs text-muted-foreground font-medium uppercase tracking-widest">التنقل السريع</p>
               </div>
 
-              {/* 2x2 Navigation Grid */}
+              {/* Dashboard Content (Active Devices) - Now part of Menu */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between px-1">
+                  <div className="text-right">
+                    <h2 className="text-xl font-bold">الأجهزة النشطة</h2>
+                    <p className="text-muted-foreground text-xs">قائمة الانتظار الحالية</p>
+                  </div>
+                  <Badge variant="secondary" className="bg-primary/10 text-primary border-none font-bold px-3">
+                    {activeCount} أجهزة
+                  </Badge>
+                </div>
+                
+                <Dashboard 
+                  records={records} 
+                  onArchive={(id) => {
+                    archiveRecord(id);
+                    toast({
+                      title: "تم الأرشفة",
+                      description: "تم نقل الجهاز إلى سجل الأرشيف بنجاح.",
+                    });
+                  }} 
+                />
+              </div>
+
+              {/* Navigation Row (Archive & Reports) */}
               <div className="grid grid-cols-2 gap-4">
                 {menuItems.map((item) => (
                   <button
@@ -174,25 +194,6 @@ export default function Home() {
                 <p className="text-muted-foreground text-sm">وجه الكاميرا نحو الكود</p>
               </div>
               <Scanner onScan={handleScan} />
-            </div>
-          )}
-
-          {activeSection === 'Dashboard' && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-              <div className="text-right">
-                <h2 className="text-xl font-bold">نظرة عامة على الخدمات</h2>
-                <p className="text-muted-foreground text-sm">الأجهزة النشطة حالياً</p>
-              </div>
-              <Dashboard 
-                records={records} 
-                onArchive={(id) => {
-                  archiveRecord(id);
-                  toast({
-                    title: "تم الأرشفة",
-                    description: "تم نقل الجهاز إلى سجل الأرشيف بنجاح.",
-                  });
-                }} 
-              />
             </div>
           )}
 
@@ -296,10 +297,9 @@ export default function Home() {
                     className="w-full h-11 text-xs rounded-xl"
                     onClick={() => {
                       setShowDetailsDialog(false);
-                      setActiveSection('Dashboard');
                     }}
                   >
-                    عرض التفاصيل الكاملة
+                    إغلاق
                   </Button>
                 </div>
               </div>
