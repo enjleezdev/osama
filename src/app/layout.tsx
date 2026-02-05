@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'OSAMA TECH | Professional Service Management',
-  description: 'Streamlined device service tracking with barcode integration.',
+  title: 'أســــــــامه لخدمات الموبايل | نظام إدارة الصيانة',
+  description: 'تتبع خدمات الأجهزة باحترافية مع نظام الباركود المتكامل.',
 };
 
 export default function RootLayout({
