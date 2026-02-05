@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -16,6 +17,7 @@ import { format } from 'date-fns';
 import { Search, History, Download } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 interface ArchiveProps {
   records: DeviceRecord[];
@@ -23,6 +25,7 @@ interface ArchiveProps {
 
 export function Archive({ records }: ArchiveProps) {
   const [searchTerm, setSearchTerm] = React.useState('');
+  const { toast } = useToast();
   
   const archived = records
     .filter(r => r.status === 'Archived')
@@ -33,29 +36,37 @@ export function Archive({ records }: ArchiveProps) {
     )
     .sort((a, b) => new Date(b.archivedDate!).getTime() - new Date(a.archivedDate!).getTime());
 
+  const handleExportClick = () => {
+    toast({
+      title: "تنبيه",
+      description: "ما تهبش القسم ده قيد التطوير",
+      variant: "destructive",
+    });
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-right" dir="rtl">
       <Card className="border-none shadow-sm overflow-hidden">
-        <CardHeader className="bg-white border-b border-gray-100 flex flex-row items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
+        <CardHeader className="bg-white border-b border-gray-100 flex flex-row-reverse items-center justify-between">
+          <div className="text-right">
+            <CardTitle className="flex items-center justify-end gap-2">
+              أرشيف الخدمات
               <History className="w-5 h-5 text-gray-400" />
-              Service Archive
             </CardTitle>
-            <CardDescription>Historical data for all completed device handovers</CardDescription>
+            <CardDescription>سجل العمليات المكتملة والأجهزة التي تم تسليمها</CardDescription>
           </div>
-          <Button variant="outline" size="sm">
-            <Download className="w-4 h-4 mr-2" />
+          <Button variant="outline" size="sm" onClick={handleExportClick} className="flex-row-reverse gap-2">
+            <Download className="w-4 h-4" />
             Export CSV
           </Button>
         </CardHeader>
         <CardContent className="p-0">
           <div className="p-4 bg-gray-50/50 border-b">
-            <div className="relative max-w-md">
-              <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+            <div className="relative max-w-md mr-auto">
+              <Search className="absolute right-3 top-3 w-4 h-4 text-gray-400" />
               <Input 
-                placeholder="Search by barcode, device or customer..." 
-                className="pl-10"
+                placeholder="ابحث بالباركود، اسم الجهاز أو العميل..." 
+                className="pr-10 text-right"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -66,18 +77,18 @@ export function Archive({ records }: ArchiveProps) {
             <Table>
               <TableHeader className="bg-white sticky top-0 z-10 shadow-sm">
                 <TableRow>
-                  <TableHead className="w-[120px]">Barcode</TableHead>
-                  <TableHead>Device</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Service</TableHead>
-                  <TableHead>Archived On</TableHead>
+                  <TableHead className="text-right">الباركود</TableHead>
+                  <TableHead className="text-right">الجهاز</TableHead>
+                  <TableHead className="text-right">العميل</TableHead>
+                  <TableHead className="text-right">الخدمة</TableHead>
+                  <TableHead className="text-right">تاريخ الأرشفة</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {archived.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="h-40 text-center text-muted-foreground">
-                      No archived records found matching your search.
+                      لا توجد سجلات مؤرشفة تطابق بحثك.
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -88,11 +99,11 @@ export function Archive({ records }: ArchiveProps) {
                       <TableCell>{record.customerName}</TableCell>
                       <TableCell>
                         <Badge variant="secondary" className="font-normal">
-                          {record.serviceType}
+                          {record.serviceType === 'Charging' ? 'شحن' : record.serviceType === 'Maintenance' ? 'صيانة' : 'برمجة'}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-muted-foreground text-sm">
-                        {record.archivedDate ? format(new Date(record.archivedDate), 'MMM d, yyyy') : 'N/A'}
+                        {record.archivedDate ? format(new Date(record.archivedDate), 'yyyy/MM/dd') : 'N/A'}
                       </TableCell>
                     </TableRow>
                   ))
