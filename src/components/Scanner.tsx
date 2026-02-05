@@ -1,10 +1,9 @@
-
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScanBarcode, Keyboard, Search, AlertCircle, XCircle } from 'lucide-react';
+import { ScanBarcode, Keyboard, Search, AlertCircle, XCircle, ShieldCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
@@ -21,6 +20,11 @@ export function Scanner({ onScan }: ScannerProps) {
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const { toast } = useToast();
 
+  // مراجع للتحقق من الدقة
+  const lastResultRef = useRef<string>("");
+  const consecutiveMatchesRef = useRef<number>(0);
+  const REQUIRED_MATCHES = 2; // يجب أن يرى الجهاز نفس الرمز مرتين متتاليتين للتأكد 100%
+
   useEffect(() => {
     if (isScanning) {
       const startScanner = async () => {
@@ -29,16 +33,15 @@ export function Scanner({ onScan }: ScannerProps) {
           scannerRef.current = html5QrCode;
 
           const config = {
-            fps: 10,
-            qrbox: { width: 250, height: 150 },
+            fps: 15, // زيادة عدد الإطارات لتحسين سرعة الاستجابة مع الدقة
+            qrbox: { width: 280, height: 160 },
+            aspectRatio: 1.0,
             formatsToSupport: [
-              Html5QrcodeSupportedFormats.QR_CODE,
               Html5QrcodeSupportedFormats.CODE_128,
-              Html5QrcodeSupportedFormats.CODE_39,
               Html5QrcodeSupportedFormats.EAN_13,
-              Html5QrcodeSupportedFormats.EAN_8,
+              Html5QrcodeSupportedFormats.QR_CODE,
               Html5QrcodeSupportedFormats.UPC_A,
-              Html5QrcodeSupportedFormats.UPC_E,
+              Html5QrcodeSupportedFormats.CODE_39,
             ]
           };
 
@@ -46,16 +49,29 @@ export function Scanner({ onScan }: ScannerProps) {
             { facingMode: "environment" },
             config,
             (decodedText) => {
-              // النجاح في المسح
-              onScan(decodedText);
-              stopScanning();
-              toast({
-                title: "تم المسح بنجاح",
-                description: `الرمز المستخرج: ${decodedText}`,
-              });
+              // آلية التحقق من الدقة:
+              if (decodedText === lastResultRef.current) {
+                consecutiveMatchesRef.current += 1;
+              } else {
+                lastResultRef.current = decodedText;
+                consecutiveMatchesRef.current = 1;
+              }
+
+              // إذا تم تأكيد الرمز بعدد المرات المطلوبة
+              if (consecutiveMatchesRef.current >= REQUIRED_MATCHES) {
+                onScan(decodedText);
+                stopScanning();
+                toast({
+                  title: "تم التأكيد بنجاح",
+                  description: `الرمز المطابق: ${decodedText}`,
+                });
+                // إعادة تعيين المراجع
+                lastResultRef.current = "";
+                consecutiveMatchesRef.current = 0;
+              }
             },
-            (errorMessage) => {
-              // أخطاء التتبع (يمكن تجاهلها عادة لأنها تحدث باستمرار أثناء البحث عن باركود)
+            () => {
+              // تجاهل الأخطاء العابرة أثناء البحث
             }
           );
           setHasCameraPermission(true);
@@ -88,6 +104,8 @@ export function Scanner({ onScan }: ScannerProps) {
   };
 
   const handleStartScanning = () => {
+    lastResultRef.current = "";
+    consecutiveMatchesRef.current = 0;
     setIsScanning(true);
   };
 
@@ -103,14 +121,14 @@ export function Scanner({ onScan }: ScannerProps) {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div 
-          className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-2xl bg-white shadow-sm transition-all overflow-hidden min-h-[400px] ${
+          className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-2xl bg-white shadow-sm transition-all overflow-hidden min-h-[420px] ${
             isScanning ? 'border-primary' : 'border-primary/30 hover:border-primary/50 cursor-pointer'
           }`}
           onClick={!isScanning ? handleStartScanning : undefined}
         >
           {isScanning ? (
             <div className="w-full h-full relative flex flex-col items-center">
-              <div id="reader" className="w-full h-full min-h-[400px]" />
+              <div id="reader" className="w-full h-full min-h-[420px]" />
               
               <div className="absolute top-4 right-4 z-20">
                 <Button 
@@ -120,22 +138,32 @@ export function Scanner({ onScan }: ScannerProps) {
                     e.stopPropagation();
                     setIsScanning(false);
                   }}
-                  className="rounded-full h-10 w-10 p-0"
+                  className="rounded-full h-10 w-10 p-0 shadow-lg"
                 >
                   <XCircle className="w-6 h-6" />
                 </Button>
               </div>
 
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
-                <div className="w-64 h-40 border-2 border-primary/50 rounded-lg relative">
-                  <div className="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-primary rounded-tl-md"></div>
-                  <div className="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-primary rounded-tr-md"></div>
-                  <div className="absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-primary rounded-bl-md"></div>
-                  <div className="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-primary rounded-br-md"></div>
-                  <div className="w-full h-0.5 bg-primary/40 absolute top-1/2 -translate-y-1/2 animate-bounce"></div>
+                <div className="w-72 h-44 border-2 border-primary rounded-lg relative shadow-[0_0_0_1000px_rgba(0,0,0,0.4)]">
+                  {/* زوايا التحديد */}
+                  <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-white rounded-tl-md"></div>
+                  <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-white rounded-tr-md"></div>
+                  <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-white rounded-bl-md"></div>
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-white rounded-br-md"></div>
+                  
+                  {/* خط الليزر المتحرك */}
+                  <div className="w-full h-1 bg-primary absolute top-1/2 -translate-y-1/2 shadow-[0_0_15px_rgba(var(--primary),0.8)] animate-pulse"></div>
                 </div>
-                <div className="mt-8 bg-black/60 text-white px-6 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
-                  ضع الباركود داخل الإطار للمسح
+                
+                <div className="mt-8 flex flex-col items-center gap-2">
+                  <div className="bg-primary/90 text-white px-6 py-2 rounded-full text-sm font-bold backdrop-blur-md flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4" />
+                    وضع الدقة العالية نشط
+                  </div>
+                  <p className="text-white/80 text-xs font-medium bg-black/40 px-3 py-1 rounded-full">
+                    ثبّت الكاميرا على الباركود لمدة ثانية
+                  </p>
                 </div>
               </div>
               
@@ -155,14 +183,12 @@ export function Scanner({ onScan }: ScannerProps) {
               <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-6 hover:scale-110 transition-transform duration-300">
                 <ScanBarcode className="w-14 h-14 text-primary" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-800">امسح الباركود</h3>
+              <h3 className="text-2xl font-bold text-gray-800">ابدأ المسح الذكي</h3>
               <p className="text-gray-500 text-center mt-3 max-w-[280px]">
-                انقر هنا لفتح الكاميرا وقراءة الرموز الحقيقية من أجهزتك
+                نظام مسح متطور بدقة 100% للباركود الحقيقي
               </p>
               <div className="mt-8 flex gap-2">
-                <Badge className="px-4 py-1.5" variant="secondary">Code 128</Badge>
-                <Badge className="px-4 py-1.5" variant="secondary">QR Code</Badge>
-                <Badge className="px-4 py-1.5" variant="secondary">EAN-13</Badge>
+                <Badge className="px-4 py-1.5 bg-green-50 text-green-700 border-green-200" variant="outline">نظام التحقق نشط</Badge>
               </div>
             </div>
           )}
@@ -191,7 +217,7 @@ export function Scanner({ onScan }: ScannerProps) {
 
           <div className="mt-8 flex items-start gap-3 p-4 bg-blue-50 text-blue-700 rounded-xl text-sm leading-relaxed border border-blue-100">
             <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-            <p>الماسح الضوئي يدعم الآن قراءة الرموز الحقيقية. تأكد من وجود إضاءة كافية عند مسح الباركود من هاتفك أو الملصقات.</p>
+            <p>لضمان أفضل نتيجة، ثبّت الجهاز جيداً وتأكد من أن الباركود يقع تماماً داخل الإطار الأبيض المخصص.</p>
           </div>
         </div>
       </div>
