@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -15,7 +14,8 @@ import {
   CheckCircle,
   X,
   Plus,
-  ArrowRight
+  ArrowRight,
+  Baby
 } from 'lucide-react';
 import { 
   Dialog, 
@@ -77,7 +77,14 @@ export default function Home() {
     { id: 'Reports', icon: BarChart3, label: 'التقارير', color: 'bg-purple-500' },
   ] as const;
 
-  if (!isLoaded) return <div className="flex h-screen items-center justify-center font-bold">جاري التحميل...</div>;
+  if (!isLoaded) return (
+    <div className="flex h-screen flex-col items-center justify-center bg-white gap-6">
+      <div className="relative">
+        <Baby className="w-20 h-20 text-primary animate-crawl" />
+      </div>
+      <p className="text-2xl font-bold text-primary animate-pulse tracking-widest">شيل الصبر...</p>
+    </div>
+  );
 
   const activeCount = records.filter(r => r.status === 'Active').length;
 
