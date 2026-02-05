@@ -226,6 +226,21 @@ export default function Home() {
         </div>
       </main>
 
+      {/* Footer Branding */}
+      <footer className="py-6 px-4 text-center border-t bg-white">
+        <p className="text-sm text-gray-500 font-medium">
+          تم التطوير بواسطة{" "}
+          <a 
+            href="https://enjleez.cloud/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-pink-400 hover:text-pink-500 transition-colors font-bold underline underline-offset-4"
+          >
+            enjleez cloud
+          </a>
+        </p>
+      </footer>
+
       {/* New Service Entry Modal */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent className="w-[95vw] max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl">
