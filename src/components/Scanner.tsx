@@ -4,10 +4,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScanBarcode, Keyboard, Search, AlertCircle } from 'lucide-react';
+import { ScanBarcode, Keyboard, Search, AlertCircle, XCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
 
 interface ScannerProps {
   onScan: (barcode: string) => void;
@@ -17,51 +18,77 @@ export function Scanner({ onScan }: ScannerProps) {
   const [manualBarcode, setManualBarcode] = useState('');
   const [isScanning, setIsScanning] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    let stream: MediaStream | null = null;
-
-    const getCameraPermission = async () => {
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({ 
-          video: { facingMode: 'environment' } 
-        });
-        setHasCameraPermission(true);
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      } catch (error) {
-        console.error('Error accessing camera:', error);
-        setHasCameraPermission(false);
-        toast({
-          variant: 'destructive',
-          title: 'فشل الوصول إلى الكاميرا',
-          description: 'يرجى تفعيل صلاحيات الكاميرا في إعدادات المتصفح لاستخدام هذه الميزة.',
-        });
-      }
-    };
-
     if (isScanning) {
-      getCameraPermission();
+      const startScanner = async () => {
+        try {
+          const html5QrCode = new Html5Qrcode("reader");
+          scannerRef.current = html5QrCode;
+
+          const config = {
+            fps: 10,
+            qrbox: { width: 250, height: 150 },
+            formatsToSupport: [
+              Html5QrcodeSupportedFormats.QR_CODE,
+              Html5QrcodeSupportedFormats.CODE_128,
+              Html5QrcodeSupportedFormats.CODE_39,
+              Html5QrcodeSupportedFormats.EAN_13,
+              Html5QrcodeSupportedFormats.EAN_8,
+              Html5QrcodeSupportedFormats.UPC_A,
+              Html5QrcodeSupportedFormats.UPC_E,
+            ]
+          };
+
+          await html5QrCode.start(
+            { facingMode: "environment" },
+            config,
+            (decodedText) => {
+              // النجاح في المسح
+              onScan(decodedText);
+              stopScanning();
+              toast({
+                title: "تم المسح بنجاح",
+                description: `الرمز المستخرج: ${decodedText}`,
+              });
+            },
+            (errorMessage) => {
+              // أخطاء التتبع (يمكن تجاهلها عادة لأنها تحدث باستمرار أثناء البحث عن باركود)
+            }
+          );
+          setHasCameraPermission(true);
+        } catch (err) {
+          console.error("Unable to start scanning", err);
+          setHasCameraPermission(false);
+          setIsScanning(false);
+        }
+      };
+
+      startScanner();
+    } else {
+      stopScanning();
     }
 
     return () => {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
+      stopScanning();
     };
-  }, [isScanning, toast]);
+  }, [isScanning]);
+
+  const stopScanning = async () => {
+    if (scannerRef.current && scannerRef.current.isScanning) {
+      try {
+        await scannerRef.current.stop();
+        scannerRef.current = null;
+      } catch (err) {
+        console.error("Failed to stop scanner", err);
+      }
+    }
+  };
 
   const handleStartScanning = () => {
     setIsScanning(true);
-    // محاكاة اكتشاف الباركود بعد 3 ثوانٍ من تشغيل الكاميرا
-    setTimeout(() => {
-      setIsScanning(false);
-      const mockBarcode = 'SRV-' + Math.floor(1000 + Math.random() * 9000);
-      onScan(mockBarcode);
-    }, 3500);
   };
 
   const handleManualSubmit = (e: React.FormEvent) => {
@@ -76,31 +103,48 @@ export function Scanner({ onScan }: ScannerProps) {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div 
-          className="relative flex flex-col items-center justify-center p-4 border-2 border-dashed border-primary/30 rounded-2xl bg-white shadow-sm hover:border-primary/50 transition-all cursor-pointer group overflow-hidden min-h-[300px]"
+          className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-2xl bg-white shadow-sm transition-all overflow-hidden min-h-[400px] ${
+            isScanning ? 'border-primary' : 'border-primary/30 hover:border-primary/50 cursor-pointer'
+          }`}
           onClick={!isScanning ? handleStartScanning : undefined}
         >
           {isScanning ? (
             <div className="w-full h-full relative flex flex-col items-center">
-              <video 
-                ref={videoRef} 
-                className="w-full aspect-video rounded-md bg-black object-cover" 
-                autoPlay 
-                muted 
-                playsInline
-              />
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <div className="w-full h-1 bg-red-500/50 shadow-[0_0_15px_red] animate-pulse" />
-                <div className="mt-4 bg-black/60 text-white px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
-                  جاري البحث عن باركود...
+              <div id="reader" className="w-full h-full min-h-[400px]" />
+              
+              <div className="absolute top-4 right-4 z-20">
+                <Button 
+                  variant="destructive" 
+                  size="sm" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsScanning(false);
+                  }}
+                  className="rounded-full h-10 w-10 p-0"
+                >
+                  <XCircle className="w-6 h-6" />
+                </Button>
+              </div>
+
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
+                <div className="w-64 h-40 border-2 border-primary/50 rounded-lg relative">
+                  <div className="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-primary rounded-tl-md"></div>
+                  <div className="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-primary rounded-tr-md"></div>
+                  <div className="absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-primary rounded-bl-md"></div>
+                  <div className="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-primary rounded-br-md"></div>
+                  <div className="w-full h-0.5 bg-primary/40 absolute top-1/2 -translate-y-1/2 animate-bounce"></div>
+                </div>
+                <div className="mt-8 bg-black/60 text-white px-6 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
+                  ضع الباركود داخل الإطار للمسح
                 </div>
               </div>
               
               {hasCameraPermission === false && (
-                <div className="absolute inset-0 flex items-center justify-center p-4 bg-white/95 z-10">
+                <div className="absolute inset-0 flex items-center justify-center p-4 bg-white/95 z-30">
                   <Alert variant="destructive">
                     <AlertTitle>مطلوب الوصول إلى الكاميرا</AlertTitle>
                     <AlertDescription>
-                      يرجى السماح بالوصول إلى الكاميرا في إعدادات المتصفح لمسح الأجهزة.
+                      يرجى السماح بالوصول إلى الكاميرا في إعدادات المتصفح لمسح الأجهزة بشكل حقيقي.
                     </AlertDescription>
                   </Alert>
                 </div>
@@ -108,14 +152,18 @@ export function Scanner({ onScan }: ScannerProps) {
             </div>
           ) : (
             <div className="py-12 flex flex-col items-center">
-              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <ScanBarcode className="w-12 h-12 text-primary" />
+              <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-6 hover:scale-110 transition-transform duration-300">
+                <ScanBarcode className="w-14 h-14 text-primary" />
               </div>
               <h3 className="text-2xl font-bold text-gray-800">امسح الباركود</h3>
-              <p className="text-gray-500 text-center mt-3 max-w-[240px]">
-                انقر هنا لفتح الكاميرا ومسح رمز الجهاز تلقائياً
+              <p className="text-gray-500 text-center mt-3 max-w-[280px]">
+                انقر هنا لفتح الكاميرا وقراءة الرموز الحقيقية من أجهزتك
               </p>
-              <Badge className="mt-6 px-4 py-1" variant="secondary">جاهز للمسح الذكي</Badge>
+              <div className="mt-8 flex gap-2">
+                <Badge className="px-4 py-1.5" variant="secondary">Code 128</Badge>
+                <Badge className="px-4 py-1.5" variant="secondary">QR Code</Badge>
+                <Badge className="px-4 py-1.5" variant="secondary">EAN-13</Badge>
+              </div>
             </div>
           )}
         </div>
@@ -143,7 +191,7 @@ export function Scanner({ onScan }: ScannerProps) {
 
           <div className="mt-8 flex items-start gap-3 p-4 bg-blue-50 text-blue-700 rounded-xl text-sm leading-relaxed border border-blue-100">
             <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-            <p>عند مسح باركود مسجل مسبقاً، سيتم عرض بيانات الجهاز فوراً. الباركودات الجديدة ستقوم بفتح نموذج تسجيل خدمة جديد.</p>
+            <p>الماسح الضوئي يدعم الآن قراءة الرموز الحقيقية. تأكد من وجود إضاءة كافية عند مسح الباركود من هاتفك أو الملصقات.</p>
           </div>
         </div>
       </div>
