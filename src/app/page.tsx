@@ -89,7 +89,7 @@ export default function Home() {
   const activeCount = records.filter(r => r.status === 'Active').length;
 
   return (
-    <div className="min-h-screen bg-[#F8F9FB] text-foreground flex flex-col overflow-x-hidden w-full max-w-full">
+    <div className="min-h-screen bg-[#F8F9FB] text-foreground flex flex-col overflow-x-hidden w-full max-w-full font-body">
       <header className="h-16 bg-white border-b flex items-center justify-between px-4 sticky top-0 z-50 w-full shrink-0">
         <div className="flex items-center gap-2">
           {activeSection !== 'Menu' && (
@@ -221,13 +221,13 @@ export default function Home() {
       </main>
 
       <footer className="py-6 px-4 text-center border-t bg-white">
-        <p className="text-sm text-gray-500 font-medium">
+        <p className="text-sm text-gray-500 font-bold">
           تم التطوير بواسطة{" "}
           <a 
             href="https://enjleez.cloud/" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-pink-400 hover:text-pink-500 transition-colors font-bold underline underline-offset-4"
+            className="text-pink-400 hover:text-pink-500 transition-colors underline underline-offset-4"
           >
             enjleez cloud
           </a>
@@ -277,17 +277,17 @@ export default function Home() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-0.5">
                     <p className="text-[10px] uppercase text-muted-foreground font-bold">العميل</p>
-                    <p className="font-semibold text-sm">{lookupDevice.customerName}</p>
+                    <p className="font-bold text-sm">{lookupDevice.customerName}</p>
                   </div>
                   <div className="space-y-0.5">
                     <p className="text-[10px] uppercase text-muted-foreground font-bold">نوع الخدمة</p>
-                    <p className="font-semibold text-sm text-accent">{lookupDevice.serviceType}</p>
+                    <p className="font-bold text-sm text-accent">{lookupDevice.serviceType}</p>
                   </div>
                 </div>
 
                 <div className="bg-gray-50 p-3 rounded-xl border border-dashed">
                   <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">الوصف</p>
-                  <p className="text-xs text-gray-700 leading-relaxed">{lookupDevice.description}</p>
+                  <p className="text-xs text-gray-700 leading-relaxed font-bold">{lookupDevice.description}</p>
                 </div>
 
                 <div className="flex flex-col gap-2 pt-2">
@@ -307,7 +307,7 @@ export default function Home() {
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="w-full h-11 text-xs rounded-xl"
+                    className="w-full h-11 text-xs rounded-xl font-bold"
                     onClick={() => {
                       setShowDetailsDialog(false);
                     }}
