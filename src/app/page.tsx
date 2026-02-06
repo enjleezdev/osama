@@ -58,15 +58,13 @@ export default function Home() {
     if (existing) {
       setLookupDevice(existing);
       setShowDetailsDialog(true);
-      toast({
-        title: "جهاز معروف ✅",
-        description: `تم العثور على سجل نشط لـ ${existing.deviceName}`,
-      });
+      // Removed success toast per user request
     } else {
       setScannedBarcode(cleanBarcode);
       setShowForm(true);
+      // Removed any possible success toast here too
     }
-  }, [findByBarcode, toast]);
+  }, [findByBarcode]);
 
   const onFormSubmit = (data: any) => {
     addRecord(data);

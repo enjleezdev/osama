@@ -59,10 +59,7 @@ export function Scanner({ onScan }: ScannerProps) {
                 onScan(decodedText);
                 stopScanning();
                 setIsScanning(false);
-                toast({
-                  title: "تم التعرف بنجاح ✨",
-                  description: `الرمز المستخرج: ${decodedText}`,
-                });
+                // Removed success toast per user request
                 lastResultRef.current = "";
                 consecutiveMatchesRef.current = 0;
               }
@@ -85,7 +82,7 @@ export function Scanner({ onScan }: ScannerProps) {
     return () => {
       stopScanning();
     };
-  }, [isScanning]);
+  }, [isScanning, onScan]);
 
   const stopScanning = async () => {
     if (scannerRef.current && scannerRef.current.isScanning) {
