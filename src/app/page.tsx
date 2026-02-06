@@ -266,12 +266,12 @@ export default function Home() {
         <p className="text-sm text-gray-500 font-bold flex flex-col items-center gap-2">
           <span>تصميم وتطوير بكل ❤️ بواسطة</span>
           <a 
-            href="https://enjleez.cloud/" 
+            href="https://tech.enjleez.cloud/ar" 
             target="_blank" 
             rel="noopener noreferrer"
             className="text-pink-500 hover:text-pink-600 transition-all font-black text-lg underline-offset-8 hover:underline"
           >
-            enjleez cloud
+            ENJLEEZ TECH
           </a>
         </p>
       </footer>
