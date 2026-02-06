@@ -82,19 +82,23 @@ export default function Home() {
       <div className="flex flex-row items-center gap-6 relative">
         <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full scale-150 animate-pulse-slow"></div>
         
-        <div className="relative z-10">
-          <Snail className="w-20 h-20 text-primary animate-[crawl_4s_linear_infinite]" />
-        </div>
-        
-        <div className="flex flex-col relative z-10">
-          <p className="text-4xl md:text-6xl font-black text-primary tracking-tighter drop-shadow-sm flex items-center gap-3">
-            شيل الصبر
-            <span className="flex gap-1.5 mt-4">
-              <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce [animation-duration:0.8s]"></span>
-              <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce [animation-duration:0.8s] [animation-delay:0.2s]"></span>
-              <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce [animation-duration:0.8s] [animation-delay:0.4s]"></span>
-            </span>
-          </p>
+        <div className="flex items-center gap-6 relative z-10">
+          <div className="relative group animate-[crawl_4s_linear_infinite]">
+            <Snail className="w-20 h-20 text-primary relative z-10" />
+            {/* Realistic Shadow */}
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-14 h-2 bg-black/10 blur-[4px] rounded-[100%] z-0"></div>
+          </div>
+          
+          <div className="flex flex-col">
+            <p className="text-4xl md:text-6xl font-black text-primary tracking-tighter drop-shadow-sm flex items-center gap-3">
+              شيل الصبر
+              <span className="flex gap-1.5 mt-4">
+                <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce [animation-duration:0.8s]"></span>
+                <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce [animation-duration:0.8s] [animation-delay:0.2s]"></span>
+                <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce [animation-duration:0.8s] [animation-delay:0.4s]"></span>
+              </span>
+            </p>
+          </div>
         </div>
       </div>
       <style jsx>{`
@@ -291,7 +295,7 @@ export default function Home() {
       </Dialog>
 
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
-        <DialogContent className="w-[92vw] max-w-md p-0 overflow-hidden border-none shadow-2xl rounded-[3rem]">
+        <DialogContent className="w-[92vw] max-md p-0 overflow-hidden border-none shadow-2xl rounded-[3rem]">
           {lookupDevice && (
             <div className="bg-white">
               <div className="bg-primary p-8 text-white relative overflow-hidden">
