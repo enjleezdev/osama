@@ -264,8 +264,8 @@ export default function Home() {
 
       {/* نموذج تسجيل خدمة جديدة */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="w-[95vw] max-w-xl max-h-[90vh] overflow-y-auto rounded-[3rem] border-none shadow-2xl p-0 overflow-hidden">
-          <DialogHeader className="sr-only">
+        <DialogContent className="w-[95vw] max-w-xl max-h-[90vh] overflow-y-auto rounded-[3rem] border-none shadow-2xl p-0">
+          <DialogHeader className="p-6 pb-0 sr-only">
             <DialogTitle>تسجيل جهاز جديد</DialogTitle>
           </DialogHeader>
           <ServiceForm 
@@ -282,7 +282,7 @@ export default function Home() {
       {/* تفاصيل الجهاز المسجل (الموجود مسبقاً) */}
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
         <DialogContent className="w-[92vw] max-md p-0 overflow-hidden border-none shadow-2xl rounded-[3rem]">
-          <DialogHeader className="sr-only">
+          <DialogHeader className="p-6 pb-0 sr-only">
             <DialogTitle>بيانات الجهاز في النظام</DialogTitle>
           </DialogHeader>
           {lookupDevice && (
