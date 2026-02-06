@@ -62,7 +62,7 @@ export function ServiceForm({ initialBarcode, onSubmit, onCancel }: ServiceFormP
   const serviceType = form.watch('serviceType');
 
   return (
-    <div className="space-y-6 text-right" dir="rtl">
+    <div className="p-6 md:p-10 space-y-6 text-right" dir="rtl">
       <div className="flex items-center gap-2 justify-end">
         <div className="text-right">
           <h2 className="text-xl font-black text-gray-800">نموذج طلب الخدمة</h2>
