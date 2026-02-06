@@ -1,9 +1,3 @@
-# Firebase Studio
-
-This is a NextJS starter in Firebase Studio.
-
-To get started, take a look at src/app/page.tsx.
-
 # أســــــــامه لخدمات الموبايل
 
 نظام إدارة صيانة متكامل مع دعم الباركود وتطبيق ويب (PWA).
@@ -18,8 +12,11 @@ To get started, take a look at src/app/page.tsx.
 
 ### إدارة الفروع (Branches)
 لحذف فرع محلي بعد الانتهاء منه (مثلاً فرع `sudan`):
-* الحذف الآمن (Safe Delete): `git branch -d sudan`
-* الحذف الإجباري (Force Delete): `git branch -D sudan`
+* **الحذف الآمن (Safe Delete):** 
+  `git branch -d sudan`
+* **الحذف الإجباري (Force Delete):** 
+  (استخدم هذا إذا ظهر خطأ "not fully merged")
+  `git branch -D sudan`
 
 ---
 تم التطوير بواسطة **ENJLEEZ TECH**
