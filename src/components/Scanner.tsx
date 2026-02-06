@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScanBarcode, Keyboard, Search, AlertCircle, XCircle, ShieldCheck } from 'lucide-react';
+import { ScanBarcode, Keyboard, Search, AlertCircle, XCircle, ShieldCheck, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
@@ -32,8 +32,8 @@ export function Scanner({ onScan }: ScannerProps) {
           scannerRef.current = html5QrCode;
 
           const config = {
-            fps: 15, 
-            qrbox: { width: 280, height: 160 },
+            fps: 20, 
+            qrbox: { width: 280, height: 180 },
             aspectRatio: 1.0,
             formatsToSupport: [
               Html5QrcodeSupportedFormats.CODE_128,
@@ -59,10 +59,9 @@ export function Scanner({ onScan }: ScannerProps) {
                 onScan(decodedText);
                 stopScanning();
                 setIsScanning(false);
-                // تأكيد سريع جداً
                 toast({
-                  title: "تم المسح بنجاح",
-                  description: `الرمز: ${decodedText}`,
+                  title: "تم التعرف بنجاح ✨",
+                  description: `الرمز المستخرج: ${decodedText}`,
                 });
                 lastResultRef.current = "";
                 consecutiveMatchesRef.current = 0;
@@ -72,7 +71,7 @@ export function Scanner({ onScan }: ScannerProps) {
           );
           setHasCameraPermission(true);
         } catch (err) {
-          console.error("Unable to start scanning", err);
+          console.error("Camera error", err);
           setHasCameraPermission(false);
           setIsScanning(false);
         }
@@ -94,15 +93,9 @@ export function Scanner({ onScan }: ScannerProps) {
         await scannerRef.current.stop();
         scannerRef.current = null;
       } catch (err) {
-        console.error("Failed to stop scanner", err);
+        console.error("Stop error", err);
       }
     }
-  };
-
-  const handleStartScanning = () => {
-    lastResultRef.current = "";
-    consecutiveMatchesRef.current = 0;
-    setIsScanning(true);
   };
 
   const handleManualSubmit = (e: React.FormEvent) => {
@@ -114,103 +107,123 @@ export function Scanner({ onScan }: ScannerProps) {
   };
 
   return (
-    <div className="space-y-6 w-full max-w-full">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500">
+      <div className="grid grid-cols-1 gap-6">
+        
+        {/* Scanner Card */}
         <div 
-          className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-2xl bg-white shadow-sm transition-all overflow-hidden min-h-[350px] md:min-h-[420px] ${
-            isScanning ? 'border-primary' : 'border-primary/30 hover:border-primary/50 cursor-pointer'
+          className={`relative overflow-hidden rounded-[3rem] glass-card min-h-[400px] flex flex-col transition-all duration-500 ${
+            isScanning ? 'ring-4 ring-primary ring-offset-8' : 'hover:scale-[1.02] cursor-pointer'
           }`}
-          onClick={!isScanning ? handleStartScanning : undefined}
+          onClick={!isScanning ? () => setIsScanning(true) : undefined}
         >
           {isScanning ? (
-            <div className="w-full h-full relative flex flex-col items-center">
-              <div id="reader" className="w-full h-full min-h-[350px]" />
+            <div className="w-full h-full relative flex flex-col">
+              <div id="reader" className="w-full h-full min-h-[400px]" />
               
-              <div className="absolute top-4 left-4 z-20">
-                <Button 
-                  variant="destructive" 
-                  size="sm" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsScanning(false);
-                  }}
-                  className="rounded-full h-10 w-10 p-0 shadow-lg"
-                >
-                  <XCircle className="w-6 h-6" />
-                </Button>
-              </div>
+              <Button 
+                variant="destructive" 
+                size="icon" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsScanning(false);
+                }}
+                className="absolute top-6 left-6 z-30 rounded-full h-12 w-12 shadow-2xl"
+              >
+                <XCircle className="w-8 h-8" />
+              </Button>
 
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
-                <div className="w-[80%] h-32 md:w-72 md:h-44 border-2 border-primary rounded-lg relative shadow-[0_0_0_1000px_rgba(0,0,0,0.4)]">
-                  <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-white rounded-tl-md"></div>
-                  <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-white rounded-tr-md"></div>
-                  <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-white rounded-bl-md"></div>
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-white rounded-br-md"></div>
-                  <div className="w-full h-1 bg-primary absolute top-1/2 -translate-y-1/2 shadow-[0_0_15px_rgba(var(--primary),0.8)] animate-pulse"></div>
+              {/* Holographic Overlay */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-20">
+                <div className="w-72 h-44 border-2 border-primary/50 rounded-3xl relative">
+                  <div className="absolute -top-1 -left-1 w-10 h-10 border-t-8 border-l-8 border-primary rounded-tl-2xl"></div>
+                  <div className="absolute -top-1 -right-1 w-10 h-10 border-t-8 border-r-8 border-primary rounded-tr-2xl"></div>
+                  <div className="absolute -bottom-1 -left-1 w-10 h-10 border-b-8 border-l-8 border-primary rounded-bl-2xl"></div>
+                  <div className="absolute -bottom-1 -right-1 w-10 h-10 border-b-8 border-r-8 border-primary rounded-br-2xl"></div>
+                  
+                  <div className="absolute inset-0 bg-primary/5 animate-pulse"></div>
+                  <div className="w-full h-[2px] bg-primary absolute top-0 shadow-[0_0_20px_rgba(35,185,54,1)] animate-[scan_2s_infinite]"></div>
                 </div>
                 
-                <div className="mt-4 md:mt-8 flex flex-col items-center gap-2">
-                  <div className="bg-primary/90 text-white px-4 py-1.5 rounded-full text-[10px] md:text-sm font-bold backdrop-blur-md flex items-center gap-2">
-                    <ShieldCheck className="w-3 h-3 md:w-4 h-4" />
-                    وضع الدقة نشط
+                <div className="mt-12 flex flex-col items-center gap-3">
+                  <div className="bg-primary px-6 py-2 rounded-full text-white text-xs font-black shadow-2xl flex items-center gap-2">
+                    <Zap className="w-4 h-4 fill-current animate-bounce" />
+                    المسح الذكي نشط
                   </div>
+                  <p className="text-white text-xs font-bold drop-shadow-md">ضع الباركود داخل الإطار المضيء</p>
                 </div>
               </div>
-              
+
               {hasCameraPermission === false && (
-                <div className="absolute inset-0 flex items-center justify-center p-4 bg-white/95 z-30">
-                  <Alert variant="destructive">
-                    <AlertTitle className="text-right font-bold">مطلوب الوصول إلى الكاميرا</AlertTitle>
-                    <AlertDescription className="text-right">
-                      يرجى السماح بالوصول إلى الكاميرا في إعدادات المتصفح.
+                <div className="absolute inset-0 flex items-center justify-center p-8 bg-white/95 z-40 backdrop-blur-md">
+                  <Alert variant="destructive" className="rounded-3xl p-6 border-none shadow-2xl">
+                    <ShieldCheck className="w-8 h-8 mb-4" />
+                    <AlertTitle className="text-right text-lg font-black">الكاميرا معطلة</AlertTitle>
+                    <AlertDescription className="text-right font-bold mt-2">
+                      يرجى السماح بالوصول من إعدادات المتصفح لإتمام عملية المسح.
                     </AlertDescription>
                   </Alert>
                 </div>
               )}
             </div>
           ) : (
-            <div className="py-12 flex flex-col items-center">
-              <div className="w-20 h-20 md:w-24 md:h-24 bg-primary/10 rounded-full flex items-center justify-center mb-6 hover:scale-110 transition-transform duration-300">
-                <ScanBarcode className="w-10 h-10 md:w-14 md:h-14 text-primary" />
+            <div className="flex-1 flex flex-col items-center justify-center p-12 text-center relative overflow-hidden">
+              <div className="absolute inset-0 bg-primary/5 opacity-50"></div>
+              <div className="w-32 h-32 bg-primary/10 rounded-[2.5rem] flex items-center justify-center mb-8 animate-float">
+                <ScanBarcode className="w-16 h-16 text-primary" />
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-gray-800">امسح الباركود</h3>
-              <p className="text-gray-500 text-center mt-2 px-6 text-sm md:text-md">
-                قم بتوجيه الكاميرا نحو الكود الحقيقي الخاص بك
+              <h3 className="text-2xl font-black text-gray-800">تشغيل الكاميرا</h3>
+              <p className="text-muted-foreground font-bold mt-2 max-w-[200px]">
+                استخدم كاميرا الهاتف لمسح الأكواد بسرعة ودقة
               </p>
-              <div className="mt-6">
-                <Badge className="px-4 py-1.5 bg-green-50 text-green-700 border-green-200" variant="outline">نظام التحقق نشط</Badge>
+              <div className="mt-8">
+                <Badge className="bg-primary/20 text-primary border-none px-6 py-2 rounded-full font-black text-xs">نظام التحقق المزدوج 100%</Badge>
               </div>
             </div>
           )}
         </div>
 
-        <div className="flex flex-col justify-center p-6 md:p-8 bg-white border border-gray-200 rounded-2xl shadow-sm">
-          <div className="flex items-center gap-2 mb-6">
-            <Keyboard className="w-5 h-5 text-accent" />
-            <h3 className="text-lg md:text-xl font-semibold text-gray-800">إدخال يدوي</h3>
+        {/* Manual Entry Section */}
+        <div className="glass-card p-10 rounded-[3rem] border-none">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-10 h-10 bg-accent/10 text-accent rounded-2xl flex items-center justify-center">
+              <Keyboard className="w-6 h-6" />
+            </div>
+            <h3 className="text-xl font-black text-gray-800">إدخال يدوي</h3>
           </div>
           
           <form onSubmit={handleManualSubmit} className="space-y-4">
-            <div className="relative">
-              <Search className="absolute right-3 top-3.5 w-5 h-5 text-gray-400" />
+            <div className="relative group">
+              <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400 group-focus-within:text-primary transition-colors" />
               <Input 
-                placeholder="أدخل الرمز هنا" 
-                className="pr-10 h-12 md:h-14 text-md md:text-lg text-right"
+                placeholder="أدخل رمز الباركود" 
+                className="pr-14 h-16 rounded-2xl border-none bg-gray-100/50 text-lg font-black text-right focus-visible:ring-primary shadow-inner"
                 value={manualBarcode}
                 onChange={(e) => setManualBarcode(e.target.value)}
               />
             </div>
-            <Button type="submit" className="w-full h-12 md:h-14 bg-accent hover:bg-accent/90 text-md md:text-lg font-bold" disabled={!manualBarcode.trim()}>
-              بدء البحث
+            <Button 
+              type="submit" 
+              className="w-full h-16 bg-accent hover:bg-accent/90 text-white text-lg font-black rounded-2xl shadow-xl shadow-accent/20 transition-all active:scale-95"
+              disabled={!manualBarcode.trim()}
+            >
+              بحث في النظام
             </Button>
           </form>
 
-          <div className="mt-6 flex items-start gap-3 p-4 bg-blue-50 text-blue-700 rounded-xl text-[12px] md:text-sm leading-relaxed border border-blue-100 text-right">
-            <p className="w-full">لضمان أفضل نتيجة، ثبّت الجهاز جيداً وتأكد من أن الباركود يقع تماماً داخل الإطار.</p>
-            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+          <div className="mt-8 flex items-start gap-4 p-5 bg-blue-50/50 text-blue-700 rounded-3xl text-sm border border-blue-100/50 text-right font-bold leading-relaxed">
+            <AlertCircle className="w-6 h-6 shrink-0 text-blue-500" />
+            <p>لنتائج أدق، تأكد من نظافة عدسة الكاميرا وتوفر إضاءة جيدة حول الجهاز.</p>
           </div>
         </div>
       </div>
+      
+      <style jsx>{`
+        @keyframes scan {
+          0% { top: 0; }
+          100% { top: 100%; }
+        }
+      `}</style>
     </div>
   );
 }
