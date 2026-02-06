@@ -64,25 +64,30 @@ export function ServiceForm({ initialBarcode, onSubmit, onCancel }: ServiceFormP
   return (
     <div className="space-y-6 text-right" dir="rtl">
       <div className="flex items-center gap-2 justify-end">
-        <div>
-          <h2 className="text-xl font-semibold">نموذج طلب الخدمة</h2>
-          <p className="text-sm text-muted-foreground">تسجيل جهاز جديد في النظام</p>
+        <div className="text-right">
+          <h2 className="text-xl font-black text-gray-800">نموذج طلب الخدمة</h2>
+          <p className="text-sm text-muted-foreground font-bold">تسجيل جهاز جديد في النظام</p>
         </div>
-        <div className="p-2 bg-primary/10 rounded-full text-primary">
-          <Settings className="w-5 h-5" />
+        <div className="p-3 bg-primary/10 rounded-2xl text-primary">
+          <Settings className="w-6 h-6" />
         </div>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
             control={form.control}
             name="barcode"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>رقم الباركود</FormLabel>
+                <FormLabel className="font-black">رقم الباركود</FormLabel>
                 <FormControl>
-                  <Input placeholder="امسح أو أدخل الباركود" {...field} readOnly={!!initialBarcode} className="text-right" />
+                  <Input 
+                    placeholder="امسح أو أدخل الباركود" 
+                    {...field} 
+                    readOnly={!!initialBarcode} 
+                    className="h-14 rounded-2xl bg-gray-50 border-none font-black text-right shadow-inner" 
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -95,9 +100,9 @@ export function ServiceForm({ initialBarcode, onSubmit, onCancel }: ServiceFormP
               name="deviceName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>موديل الجهاز</FormLabel>
+                  <FormLabel className="font-black">موديل الجهاز</FormLabel>
                   <FormControl>
-                    <Input placeholder="مثال: iPhone 13 Pro" {...field} className="text-right" />
+                    <Input placeholder="مثال: iPhone 13 Pro" {...field} className="h-14 rounded-2xl bg-gray-50 border-none font-black text-right shadow-inner" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -108,9 +113,9 @@ export function ServiceForm({ initialBarcode, onSubmit, onCancel }: ServiceFormP
               name="customerName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>اسم العميل</FormLabel>
+                  <FormLabel className="font-black">اسم العميل</FormLabel>
                   <FormControl>
-                    <Input placeholder="أدخل الاسم بالكامل" {...field} className="text-right" />
+                    <Input placeholder="أدخل الاسم بالكامل" {...field} className="h-14 rounded-2xl bg-gray-50 border-none font-black text-right shadow-inner" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -123,29 +128,29 @@ export function ServiceForm({ initialBarcode, onSubmit, onCancel }: ServiceFormP
             name="serviceType"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>فئة الخدمة</FormLabel>
+                <FormLabel className="font-black">فئة الخدمة</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger className="flex-row-reverse">
+                    <SelectTrigger className="h-14 rounded-2xl bg-gray-50 border-none font-black flex-row-reverse shadow-inner">
                       <SelectValue placeholder="اختر فئة الخدمة" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent align="end">
-                    <SelectItem value="Charging">
+                  <SelectContent align="end" className="rounded-2xl border-none shadow-2xl">
+                    <SelectItem value="Charging" className="flex-row-reverse text-right font-bold">
                       <div className="flex items-center gap-2 flex-row-reverse">
                         <BatteryCharging className="w-4 h-4 text-orange-500" />
                         <span>شحن الهاتف</span>
                       </div>
                     </SelectItem>
-                    <SelectItem value="Maintenance">
+                    <SelectItem value="Maintenance" className="flex-row-reverse text-right font-bold">
                       <div className="flex items-center gap-2 flex-row-reverse">
                         <Settings className="w-4 h-4 text-blue-500" />
                         <span>صيانة هاردوير</span>
                       </div>
                     </SelectItem>
-                    <SelectItem value="Software">
+                    <SelectItem value="Software" className="flex-row-reverse text-right font-bold">
                       <div className="flex items-center gap-2 flex-row-reverse">
-                        <Code className="w-4 h-4 text-[#23b936]" />
+                        <Code className="w-4 h-4 text-primary" />
                         <span>برمجة / سوفتوير</span>
                       </div>
                     </SelectItem>
@@ -162,11 +167,11 @@ export function ServiceForm({ initialBarcode, onSubmit, onCancel }: ServiceFormP
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>وصف المشكلة</FormLabel>
+                  <FormLabel className="font-black">وصف المشكلة</FormLabel>
                   <FormControl>
                     <Textarea 
                       placeholder="صف المشكلة أو الخدمة المطلوبة بالتفصيل..." 
-                      className="min-h-[100px] text-right"
+                      className="min-h-[120px] rounded-2xl bg-gray-50 border-none font-bold text-right shadow-inner"
                       {...field} 
                     />
                   </FormControl>
@@ -176,13 +181,13 @@ export function ServiceForm({ initialBarcode, onSubmit, onCancel }: ServiceFormP
             />
           )}
 
-          <div className="flex justify-start gap-3 pt-4 border-t">
-            <Button type="submit" className="bg-accent hover:bg-accent/90">
-              <Save className="w-4 h-4 ml-2" />
-              حفظ السجل
+          <div className="flex flex-col sm:flex-row-reverse gap-3 pt-6 border-t border-dashed">
+            <Button type="submit" className="flex-1 h-14 bg-accent hover:bg-accent/90 text-white font-black rounded-2xl shadow-xl shadow-accent/20">
+              <Save className="w-5 h-5 ml-2" />
+              حفظ السجل في النظام
             </Button>
-            <Button type="button" variant="outline" onClick={onCancel}>
-              إلغاء
+            <Button type="button" variant="ghost" onClick={onCancel} className="h-14 font-black rounded-2xl text-gray-400">
+              إلغاء العملية
             </Button>
           </div>
         </form>
