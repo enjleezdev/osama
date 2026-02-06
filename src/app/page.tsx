@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from 'react';
@@ -170,8 +169,8 @@ export default function Home() {
                   <p className="text-white/70 text-sm font-bold mt-1">فتاح يا عليم رزاق يا كريم</p>
                 </div>
                 
-                {/* Visual scanning line */}
-                <div className="absolute left-0 right-0 h-[2px] bg-white/40 shadow-[0_0_15px_rgba(255,255,255,0.8)] animate-[scan_3s_infinite] pointer-events-none"></div>
+                {/* Visual scanning line - Updated to Red */}
+                <div className="absolute left-0 right-0 h-[2px] bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-[scan_3s_infinite] pointer-events-none"></div>
               </button>
             </div>
 
