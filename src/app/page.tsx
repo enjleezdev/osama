@@ -78,27 +78,30 @@ export default function Home() {
   };
 
   if (!isLoaded) return (
-    <div className="flex h-screen flex-col items-center justify-center bg-white gap-6 overflow-hidden">
-      <div className="relative">
-        <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 animate-pulse-slow"></div>
-        {/* أيقونة الحلزون مع أنيميشن الزحف */}
-        <Snail className="w-24 h-24 text-primary relative z-10 animate-[crawl_4s_linear_infinite]" />
-      </div>
-      <div className="flex flex-col items-center gap-2">
-        <p className="text-3xl font-black text-primary tracking-widest drop-shadow-sm flex items-center gap-1">
-          شيل الصبر
-          <span className="flex gap-1 mb-1">
-            <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-duration:0.8s]"></span>
-            <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-duration:0.8s] [animation-delay:0.2s]"></span>
-            <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-duration:0.8s] [animation-delay:0.4s]"></span>
-          </span>
-        </p>
+    <div className="flex h-screen items-center justify-center bg-white overflow-hidden p-6">
+      <div className="flex flex-row items-center gap-6 relative">
+        <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full scale-150 animate-pulse-slow"></div>
+        
+        <div className="relative z-10">
+          <Snail className="w-20 h-20 text-primary animate-[crawl_4s_linear_infinite]" />
+        </div>
+        
+        <div className="flex flex-col relative z-10">
+          <p className="text-4xl md:text-6xl font-black text-primary tracking-tighter drop-shadow-sm flex items-center gap-3">
+            شيل الصبر
+            <span className="flex gap-1.5 mt-4">
+              <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce [animation-duration:0.8s]"></span>
+              <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce [animation-duration:0.8s] [animation-delay:0.2s]"></span>
+              <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce [animation-duration:0.8s] [animation-delay:0.4s]"></span>
+            </span>
+          </p>
+        </div>
       </div>
       <style jsx>{`
         @keyframes crawl {
-          0% { transform: translateX(-40px) rotate(-5deg); }
-          50% { transform: translateX(40px) rotate(5deg); }
-          100% { transform: translateX(-40px) rotate(-5deg); }
+          0% { transform: translateX(-30px) rotate(-5deg); }
+          50% { transform: translateX(30px) rotate(5deg); }
+          100% { transform: translateX(-30px) rotate(-5deg); }
         }
       `}</style>
     </div>
@@ -184,7 +187,7 @@ export default function Home() {
                </div>
             </div>
 
-            {/* Active Workspace */}
+            {/* Active Workspace - Integrated Dashboard */}
             <div className="space-y-4">
               <div className="flex items-center justify-between px-2">
                 <h3 className="text-xl font-black flex items-center gap-2">
