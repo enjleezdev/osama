@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { DeviceRecord } from './types';
 
 const STORAGE_KEY = 'serviceflow_devices';
@@ -44,12 +44,14 @@ export function useDeviceStore() {
     ));
   };
 
+  const findByBarcode = useCallback((barcode: string) => {
+    const cleanBarcode = barcode.trim();
+    // نبحث عن الجهاز في القائمة النشطة أولاً
+    return records.find(r => r.barcode.trim() === cleanBarcode && r.status === 'Active');
+  }, [records]);
+
   const getActiveRecords = () => records.filter(r => r.status === 'Active');
   const getArchivedRecords = () => records.filter(r => r.status === 'Archived');
-  
-  const findByBarcode = (barcode: string) => {
-    return records.find(r => r.barcode === barcode && r.status === 'Active');
-  };
 
   return {
     records,

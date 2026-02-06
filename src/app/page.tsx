@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useDeviceStore } from '@/app/lib/store';
 import { Scanner } from '@/components/Scanner';
 import { ServiceForm } from '@/components/ServiceForm';
@@ -53,20 +53,22 @@ export default function Home() {
     findByBarcode 
   } = useDeviceStore();
 
-  const handleScan = (barcode: string) => {
-    const existing = findByBarcode(barcode);
+  const handleScan = useCallback((barcode: string) => {
+    const cleanBarcode = barcode.trim();
+    const existing = findByBarcode(cleanBarcode);
+    
     if (existing) {
       setLookupDevice(existing);
       setShowDetailsDialog(true);
       toast({
         title: "جهاز معروف ✅",
-        description: `تم العثور على سجل لـ ${existing.deviceName}`,
+        description: `تم العثور على سجل نشط لـ ${existing.deviceName}`,
       });
     } else {
-      setScannedBarcode(barcode);
+      setScannedBarcode(cleanBarcode);
       setShowForm(true);
     }
-  };
+  }, [findByBarcode, toast]);
 
   const onFormSubmit = (data: any) => {
     addRecord(data);
@@ -266,7 +268,7 @@ export default function Home() {
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent className="w-[95vw] max-w-xl max-h-[90vh] overflow-y-auto rounded-[3rem] border-none shadow-2xl p-8">
           <DialogHeader>
-            <DialogTitle className="sr-only">نموذج تسجيل خدمة جديدة</DialogTitle>
+            <DialogTitle className="sr-only">تسجيل جهاز جديد</DialogTitle>
           </DialogHeader>
           <ServiceForm 
             initialBarcode={scannedBarcode || ''} 
@@ -283,7 +285,7 @@ export default function Home() {
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
         <DialogContent className="w-[92vw] max-md p-0 overflow-hidden border-none shadow-2xl rounded-[3rem]">
           <DialogHeader>
-            <DialogTitle className="sr-only">تفاصيل الجهاز المسجل</DialogTitle>
+            <DialogTitle className="sr-only">بيانات الجهاز في النظام</DialogTitle>
           </DialogHeader>
           {lookupDevice && (
             <div className="bg-white text-right">
