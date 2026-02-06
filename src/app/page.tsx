@@ -85,16 +85,16 @@ export default function Home() {
         <Snail className="w-24 h-24 text-primary relative z-10 animate-[crawl_4s_linear_infinite]" />
       </div>
       <div className="flex flex-col items-center gap-2">
-        <p className="text-3xl font-bold text-primary tracking-widest drop-shadow-sm">شيل الصبر...</p>
-        <div className="h-1.5 w-48 bg-gray-100 rounded-full overflow-hidden">
-          <div className="h-full bg-primary animate-[loading_2s_infinite]"></div>
-        </div>
+        <p className="text-3xl font-black text-primary tracking-widest drop-shadow-sm flex items-center gap-1">
+          شيل الصبر
+          <span className="flex gap-1 mb-1">
+            <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-duration:0.8s]"></span>
+            <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-duration:0.8s] [animation-delay:0.2s]"></span>
+            <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-duration:0.8s] [animation-delay:0.4s]"></span>
+          </span>
+        </p>
       </div>
       <style jsx>{`
-        @keyframes loading {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
         @keyframes crawl {
           0% { transform: translateX(-40px) rotate(-5deg); }
           50% { transform: translateX(40px) rotate(5deg); }
