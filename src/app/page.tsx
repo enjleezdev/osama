@@ -84,7 +84,6 @@ export default function Home() {
         <div className="flex items-center gap-6 relative z-10">
           <div className="relative group animate-[crawl_4s_linear_infinite]">
             <Snail className="w-20 h-20 text-primary relative z-10" />
-            {/* Realistic Shadow */}
             <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-14 h-2 bg-black/10 blur-[4px] rounded-[100%] z-0"></div>
           </div>
           
@@ -114,7 +113,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-transparent text-foreground flex flex-col selection:bg-primary/30 font-body">
-      {/* Dynamic Background Elements */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] right-[-10%] w-[50%] aspect-square rounded-full bg-primary/5 blur-[120px]"></div>
         <div className="absolute bottom-[-10%] left-[-10%] w-[50%] aspect-square rounded-full bg-accent/5 blur-[120px]"></div>
@@ -153,14 +151,13 @@ export default function Home() {
         {activeSection === 'Menu' && (
           <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
             
-            {/* Hero Section / Action Center */}
             <div className="relative group">
-              <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-[3rem] group-hover:bg-primary/30 transition-all"></div>
+              <div className="absolute inset-0 bg-blue-500/20 blur-2xl rounded-[3rem] group-hover:bg-blue-500/30 transition-all"></div>
               <button 
                 onClick={() => setActiveSection('Scanner')}
-                className="relative w-full aspect-video md:aspect-[21/9] bg-primary rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-95 group"
+                className="relative w-full aspect-video md:aspect-[21/9] bg-blue-600 rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-95 group"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
                 <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md border border-white/30 animate-float">
                   <ScanBarcode className="w-10 h-10 text-[#ffeb63]" />
                 </div>
@@ -169,12 +166,10 @@ export default function Home() {
                   <p className="text-white/70 text-sm font-bold mt-1">فتاح يا عليم رزاق يا كريم</p>
                 </div>
                 
-                {/* Visual scanning line - Updated to Red */}
                 <div className="absolute left-0 right-0 h-[2px] bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-[scan_3s_infinite] pointer-events-none"></div>
               </button>
             </div>
 
-            {/* Quick Stats Grid */}
             <div className="grid grid-cols-2 gap-4">
                <div className="glass-card p-5 rounded-[2rem] flex flex-col gap-2 relative overflow-hidden group">
                   <div className="absolute -right-4 -top-4 w-16 h-16 bg-primary/10 rounded-full group-hover:scale-150 transition-transform"></div>
@@ -190,7 +185,6 @@ export default function Home() {
                </div>
             </div>
 
-            {/* Active Workspace - Integrated Dashboard */}
             <div className="space-y-4">
               <div className="flex items-center justify-between px-2">
                 <h3 className="text-xl font-black flex items-center gap-2">
@@ -210,7 +204,6 @@ export default function Home() {
               />
             </div>
 
-            {/* Bottom Grid Actions */}
             <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() => setActiveSection('Archive')}
@@ -233,7 +226,6 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Quick Entry Callout */}
             <div className="glass-card p-6 rounded-[2.5rem] flex items-center justify-between bg-gradient-to-r from-accent/10 to-transparent border-accent/20">
                <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center text-white shadow-lg shadow-accent/20">
@@ -257,7 +249,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* Dynamic Section Content */}
         <div className="animate-in fade-in slide-in-from-right-4 duration-300">
           {activeSection === 'Scanner' && <Scanner onScan={handleScan} />}
           {activeSection === 'Archive' && <Archive records={records} />}
@@ -279,7 +270,6 @@ export default function Home() {
         </p>
       </footer>
 
-      {/* Modern Dialogs */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent className="w-[95vw] max-w-xl max-h-[90vh] overflow-y-auto rounded-[3rem] border-none shadow-2xl p-8">
           <ServiceForm 
