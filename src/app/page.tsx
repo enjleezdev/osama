@@ -16,7 +16,7 @@ import {
   X,
   Plus,
   ArrowRight,
-  Baby,
+  Snail,
   Cpu,
   Smartphone,
   Zap,
@@ -81,7 +81,8 @@ export default function Home() {
     <div className="flex h-screen flex-col items-center justify-center bg-white gap-6 overflow-hidden">
       <div className="relative">
         <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 animate-pulse-slow"></div>
-        <Baby className="w-24 h-24 text-primary relative z-10 animate-crawl" />
+        {/* أيقونة الحلزون مع أنيميشن الزحف */}
+        <Snail className="w-24 h-24 text-primary relative z-10 animate-[crawl_4s_linear_infinite]" />
       </div>
       <div className="flex flex-col items-center gap-2">
         <p className="text-3xl font-bold text-primary tracking-widest drop-shadow-sm">شيل الصبر...</p>
@@ -93,6 +94,11 @@ export default function Home() {
         @keyframes loading {
           0% { transform: translateX(-100%); }
           100% { transform: translateX(100%); }
+        }
+        @keyframes crawl {
+          0% { transform: translateX(-40px) rotate(-5deg); }
+          50% { transform: translateX(40px) rotate(5deg); }
+          100% { transform: translateX(-40px) rotate(-5deg); }
         }
       `}</style>
     </div>
