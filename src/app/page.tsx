@@ -11,8 +11,6 @@ import {
   ScanBarcode, 
   History, 
   BarChart3, 
-  CheckCircle,
-  X,
   Plus,
   ArrowRight,
   Snail,
@@ -20,7 +18,8 @@ import {
   Smartphone,
   Zap,
   ShieldCheck,
-  Download
+  Download,
+  X
 } from 'lucide-react';
 import { 
   Dialog, 
@@ -30,7 +29,6 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useInstallPrompt } from '@/hooks/use-install-prompt';
 
@@ -184,13 +182,13 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-               <div className="glass-card p-5 rounded-[2rem] flex flex-col gap-2 relative overflow-hidden group border-none">
+               <div className="glass-card p-5 rounded-[2rem] flex flex-col gap-2 relative overflow-hidden group border-none shadow-md">
                   <div className="absolute -right-4 -top-4 w-16 h-16 bg-primary/10 rounded-full group-hover:scale-150 transition-transform"></div>
                   <Cpu className="w-6 h-6 text-primary relative z-10" />
                   <span className="text-3xl font-black text-gray-800">{activeCount}</span>
                   <span className="text-xs text-muted-foreground font-bold uppercase tracking-wider">قيد العمل</span>
                </div>
-               <div className="glass-card p-5 rounded-[2rem] flex flex-col gap-2 relative overflow-hidden group border-none">
+               <div className="glass-card p-5 rounded-[2rem] flex flex-col gap-2 relative overflow-hidden group border-none shadow-md">
                   <div className="absolute -right-4 -top-4 w-16 h-16 bg-accent/10 rounded-full group-hover:scale-150 transition-transform"></div>
                   <Smartphone className="w-6 h-6 text-accent relative z-10" />
                   <span className="text-3xl font-black text-gray-800">{records.length}</span>
@@ -221,7 +219,7 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() => setActiveSection('Archive')}
-                className="glass-card h-32 rounded-[2.5rem] flex flex-col items-center justify-center gap-2 group hover:bg-white hover:shadow-2xl transition-all border-none relative overflow-hidden"
+                className="glass-card h-32 rounded-[2.5rem] flex flex-col items-center justify-center gap-2 group hover:bg-white hover:shadow-2xl transition-all border-none relative overflow-hidden shadow-md"
               >
                 <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform relative z-10">
                   <History className="w-6 h-6" />
@@ -231,7 +229,7 @@ export default function Home() {
               
               <button
                 onClick={() => setActiveSection('Reports')}
-                className="glass-card h-32 rounded-[2.5rem] flex flex-col items-center justify-center gap-2 group hover:bg-white hover:shadow-2xl transition-all border-none relative overflow-hidden"
+                className="glass-card h-32 rounded-[2.5rem] flex flex-col items-center justify-center gap-2 group hover:bg-white hover:shadow-2xl transition-all border-none relative overflow-hidden shadow-md"
               >
                 <div className="w-12 h-12 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform relative z-10">
                   <BarChart3 className="w-6 h-6" />
@@ -266,9 +264,9 @@ export default function Home() {
 
       {/* نموذج تسجيل خدمة جديدة */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="w-[95vw] max-w-xl max-h-[90vh] overflow-y-auto rounded-[3rem] border-none shadow-2xl p-8">
-          <DialogHeader>
-            <DialogTitle className="sr-only">تسجيل جهاز جديد</DialogTitle>
+        <DialogContent className="w-[95vw] max-w-xl max-h-[90vh] overflow-y-auto rounded-[3rem] border-none shadow-2xl p-0 overflow-hidden">
+          <DialogHeader className="sr-only">
+            <DialogTitle>تسجيل جهاز جديد</DialogTitle>
           </DialogHeader>
           <ServiceForm 
             initialBarcode={scannedBarcode || ''} 
@@ -284,22 +282,15 @@ export default function Home() {
       {/* تفاصيل الجهاز المسجل (الموجود مسبقاً) */}
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
         <DialogContent className="w-[92vw] max-md p-0 overflow-hidden border-none shadow-2xl rounded-[3rem]">
-          <DialogHeader>
-            <DialogTitle className="sr-only">بيانات الجهاز في النظام</DialogTitle>
+          <DialogHeader className="sr-only">
+            <DialogTitle>بيانات الجهاز في النظام</DialogTitle>
           </DialogHeader>
           {lookupDevice && (
             <div className="bg-white text-right">
               <div className="bg-primary p-8 text-white relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
                 <div className="absolute inset-0 sudanese-pattern opacity-10"></div>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={() => setShowDetailsDialog(false)}
-                  className="absolute left-6 top-6 text-white hover:bg-white/20 rounded-full z-20"
-                >
-                  <X className="w-6 h-6" />
-                </Button>
+                
                 <div className="flex flex-col items-center mt-6 relative z-10">
                   <div className="w-20 h-20 bg-white/20 rounded-[2rem] flex items-center justify-center mb-4 backdrop-blur-md border border-white/30 animate-float">
                     <ShieldCheck className="w-10 h-10" />

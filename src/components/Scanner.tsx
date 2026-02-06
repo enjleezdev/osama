@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScanBarcode, Keyboard, Search, AlertCircle, XCircle, ShieldCheck, Zap } from 'lucide-react';
+import { ScanBarcode, Keyboard, Search, AlertCircle, X, ShieldCheck, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
@@ -113,7 +113,7 @@ export function Scanner({ onScan }: ScannerProps) {
         {/* Scanner Card */}
         <div 
           className={`relative overflow-hidden rounded-[3rem] glass-card min-h-[400px] flex flex-col transition-all duration-500 ${
-            isScanning ? 'ring-4 ring-primary ring-offset-8' : 'hover:scale-[1.02] cursor-pointer'
+            isScanning ? 'ring-4 ring-primary ring-offset-8' : 'hover:scale-[1.02] cursor-pointer shadow-xl'
           }`}
           onClick={!isScanning ? () => setIsScanning(true) : undefined}
         >
@@ -122,15 +122,15 @@ export function Scanner({ onScan }: ScannerProps) {
               <div id="reader" className="w-full h-full min-h-[400px]" />
               
               <Button 
-                variant="destructive" 
+                variant="ghost" 
                 size="icon" 
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsScanning(false);
                 }}
-                className="absolute top-6 left-6 z-30 rounded-full h-12 w-12 shadow-2xl"
+                className="absolute top-10 right-10 z-40 rounded-full h-12 w-12 bg-white/20 backdrop-blur-md text-white border border-white/30 hover:bg-white/40 shadow-2xl transition-all active:scale-90"
               >
-                <XCircle className="w-8 h-8" />
+                <X className="w-8 h-8" />
               </Button>
 
               {/* Holographic Overlay */}
@@ -142,7 +142,6 @@ export function Scanner({ onScan }: ScannerProps) {
                   <div className="absolute -bottom-1 -right-1 w-10 h-10 border-b-8 border-r-8 border-primary rounded-br-2xl"></div>
                   
                   <div className="absolute inset-0 bg-primary/5 animate-pulse"></div>
-                  {/* Updated Scanning Line: Thicker with Gradient Bottom-to-Top */}
                   <div className="w-full h-1.5 bg-gradient-to-t from-red-600 via-red-500 to-red-400 absolute top-0 shadow-[0_0_20px_rgba(239,68,68,1)] animate-[scan_2s_infinite]"></div>
                 </div>
                 
@@ -185,7 +184,7 @@ export function Scanner({ onScan }: ScannerProps) {
         </div>
 
         {/* Manual Entry Section */}
-        <div className="glass-card p-10 rounded-[3rem] border-none">
+        <div className="glass-card p-10 rounded-[3rem] border-none shadow-xl">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-10 h-10 bg-accent/10 text-accent rounded-2xl flex items-center justify-center">
               <Keyboard className="w-6 h-6" />
