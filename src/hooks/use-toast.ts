@@ -9,7 +9,7 @@ import type {
 } from "@/components/ui/toast"
 
 const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 2000 // تقليل مدة بقاء الرسالة لتكون أسرع (2 ثانية بدلاً من مليون)
+const TOAST_REMOVE_DELAY = 1000 // جعل الرسالة تختفي بسرعة البرق (ثانية واحدة فقط)
 
 type ToasterToast = ToastProps & {
   id: string
