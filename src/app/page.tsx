@@ -262,6 +262,7 @@ export default function Home() {
         </p>
       </footer>
 
+      {/* نموذج تسجيل خدمة جديدة */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent className="w-[95vw] max-w-xl max-h-[90vh] overflow-y-auto rounded-[3rem] border-none shadow-2xl p-8">
           <DialogHeader>
@@ -278,6 +279,7 @@ export default function Home() {
         </DialogContent>
       </Dialog>
 
+      {/* تفاصيل الجهاز المسجل (الموجود مسبقاً) */}
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
         <DialogContent className="w-[92vw] max-md p-0 overflow-hidden border-none shadow-2xl rounded-[3rem]">
           <DialogHeader>
