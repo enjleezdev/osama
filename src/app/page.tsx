@@ -166,7 +166,7 @@ export default function Home() {
                   <p className="text-white/70 text-sm font-bold mt-1">فتاح يا عليم رزاق يا كريم</p>
                 </div>
                 
-                <div className="absolute left-0 right-0 h-[2px] bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-[scan_3s_infinite] pointer-events-none"></div>
+                <div className="absolute left-0 right-0 h-1.5 bg-gradient-to-t from-red-600 via-red-500 to-red-400 shadow-[0_0_20px_rgba(239,68,68,1)] animate-[scan_3s_infinite] pointer-events-none"></div>
               </button>
             </div>
 

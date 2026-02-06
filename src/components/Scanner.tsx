@@ -142,8 +142,8 @@ export function Scanner({ onScan }: ScannerProps) {
                   <div className="absolute -bottom-1 -right-1 w-10 h-10 border-b-8 border-r-8 border-primary rounded-br-2xl"></div>
                   
                   <div className="absolute inset-0 bg-primary/5 animate-pulse"></div>
-                  {/* Updated Scanning Line to Red */}
-                  <div className="w-full h-[2px] bg-red-500 absolute top-0 shadow-[0_0_20px_rgba(239,68,68,1)] animate-[scan_2s_infinite]"></div>
+                  {/* Updated Scanning Line: Thicker with Gradient Bottom-to-Top */}
+                  <div className="w-full h-1.5 bg-gradient-to-t from-red-600 via-red-500 to-red-400 absolute top-0 shadow-[0_0_20px_rgba(239,68,68,1)] animate-[scan_2s_infinite]"></div>
                 </div>
                 
                 <div className="mt-12 flex flex-col items-center gap-3">
