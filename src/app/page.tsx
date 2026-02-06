@@ -150,7 +150,7 @@ export default function Home() {
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
                 <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md border border-white/30 animate-float">
-                  <ScanBarcode className="w-10 h-10 text-red-600" />
+                  <ScanBarcode className="w-10 h-10 text-[#ffeb63]" />
                 </div>
                 <div className="text-center z-10">
                   <h2 className="text-2xl font-black text-white">امسح الباركود</h2>
