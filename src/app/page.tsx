@@ -153,7 +153,7 @@ export default function Home() {
                 </div>
                 <div className="text-center z-10">
                   <h2 className="text-2xl font-black text-white">امسح الباركود</h2>
-                  <p className="text-white/70 text-sm font-bold mt-1">ابدأ استقبال جهاز جديد فوراً</p>
+                  <p className="text-white/70 text-sm font-bold mt-1">فتاح يا عليم رزاق يا كريم</p>
                 </div>
                 
                 {/* Visual scanning line */}
