@@ -128,9 +128,9 @@ export function Scanner({ onScan }: ScannerProps) {
                   e.stopPropagation();
                   setIsScanning(false);
                 }}
-                className="absolute top-10 right-10 z-40 rounded-full h-12 w-12 bg-white/20 backdrop-blur-md text-white border border-white/30 hover:bg-white/40 shadow-2xl transition-all active:scale-90"
+                className="absolute top-4 right-4 z-40 rounded-full h-10 w-10 bg-black/40 text-white hover:bg-black/60 shadow-2xl transition-all active:scale-90"
               >
-                <X className="w-8 h-8" />
+                <X className="w-6 h-6" />
               </Button>
 
               {/* Holographic Overlay */}
