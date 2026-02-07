@@ -44,6 +44,14 @@ export function useDeviceStore() {
     ));
   };
 
+  const deleteRecord = (id: string) => {
+    setRecords(prev => prev.filter(r => r.id !== id));
+  };
+
+  const clearArchive = () => {
+    setRecords(prev => prev.filter(r => r.status !== 'Archived'));
+  };
+
   const findByBarcode = useCallback((barcode: string) => {
     const cleanBarcode = barcode.trim();
     // نبحث عن الجهاز في القائمة النشطة أولاً
@@ -58,6 +66,8 @@ export function useDeviceStore() {
     isLoaded,
     addRecord,
     archiveRecord,
+    deleteRecord,
+    clearArchive,
     getActiveRecords,
     getArchivedRecords,
     findByBarcode

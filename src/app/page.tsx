@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useCallback } from 'react';
@@ -49,6 +48,8 @@ export default function Home() {
     isLoaded, 
     addRecord, 
     archiveRecord, 
+    deleteRecord,
+    clearArchive,
     findByBarcode 
   } = useDeviceStore();
 
@@ -56,7 +57,6 @@ export default function Home() {
     const cleanBarcode = barcode.trim();
     const existing = findByBarcode(cleanBarcode);
     
-    // لا يوجد تنبيه نجاح هنا، الظهور المباشر للنافذة هو الإشارة
     if (existing) {
       setLookupDevice(existing);
       setShowDetailsDialog(true);
@@ -233,7 +233,25 @@ export default function Home() {
 
         <div className="animate-in fade-in slide-in-from-right-4 duration-300">
           {activeSection === 'Scanner' && <Scanner onScan={handleScan} />}
-          {activeSection === 'Archive' && <Archive records={records} />}
+          {activeSection === 'Archive' && (
+            <Archive 
+              records={records} 
+              onDelete={(id) => {
+                deleteRecord(id);
+                toast({
+                  title: "تم الحذف",
+                  description: "تم حذف السجل نهائياً من الأرشيف.",
+                });
+              }}
+              onClearAll={() => {
+                clearArchive();
+                toast({
+                  title: "تم المسح",
+                  description: "تم مسح الأرشيف بالكامل.",
+                });
+              }}
+            />
+          )}
           {activeSection === 'Reports' && <Reports records={records} />}
         </div>
       </main>
