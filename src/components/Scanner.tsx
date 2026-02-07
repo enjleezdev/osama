@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { ScanBarcode, Keyboard, Search, AlertCircle, X, ShieldCheck, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
+import { Html5Qrcode, Html5QrcodeSupportedFormats, Html5QrcodeScannerState } from "html5-qrcode";
 
 interface ScannerProps {
   onScan: (barcode: string) => void;
@@ -27,6 +27,11 @@ export function Scanner({ onScan }: ScannerProps) {
     if (isScanning) {
       const startScanner = async () => {
         try {
+          // تأكد من تنظيف أي ماسح قديم قبل البدء
+          if (scannerRef.current) {
+            await stopScanning();
+          }
+
           const html5QrCode = new Html5Qrcode("reader");
           scannerRef.current = html5QrCode;
 
@@ -56,8 +61,7 @@ export function Scanner({ onScan }: ScannerProps) {
 
               if (consecutiveMatchesRef.current >= REQUIRED_MATCHES) {
                 onScan(decodedText);
-                stopScanning();
-                setIsScanning(false);
+                setIsScanning(false); // هذا سيقوم باستدعاء useEffect للإغلاق
                 lastResultRef.current = "";
                 consecutiveMatchesRef.current = 0;
               }
@@ -78,17 +82,25 @@ export function Scanner({ onScan }: ScannerProps) {
     }
 
     return () => {
-      stopScanning();
+      // التنظيف عند إلغاء تحميل المكون
+      if (scannerRef.current) {
+        stopScanning();
+      }
     };
   }, [isScanning, onScan]);
 
   const stopScanning = async () => {
-    if (scannerRef.current && scannerRef.current.isScanning) {
+    if (scannerRef.current) {
       try {
-        await scannerRef.current.stop();
+        // التحقق من أن الكاميرا قيد التشغيل فعلياً قبل محاولة الإيقاف
+        if (scannerRef.current.isScanning) {
+          await scannerRef.current.stop();
+        }
+        // مسح المرجع بعد التوقف الناجح
         scannerRef.current = null;
       } catch (err) {
-        console.error("Stop error", err);
+        // تجاهل الخطأ إذا كان الماسح في حالة انتقال بالفعل
+        console.warn("Handled stop transition error:", err);
       }
     }
   };
