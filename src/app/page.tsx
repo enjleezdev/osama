@@ -156,22 +156,27 @@ export default function Home() {
       <main className="flex-1 w-full max-w-2xl mx-auto p-6 pb-24">
         {activeSection === 'Menu' && (
           <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
+            {/* مربع الباركود - تم تعديله بالألوان المطلوبة فقط */}
             <div className="relative group">
-              <div className="absolute inset-0 bg-blue-500/20 blur-2xl rounded-[3rem] group-hover:bg-blue-500/30 transition-all"></div>
+              <div className="absolute inset-0 bg-[#413465]/30 blur-2xl rounded-[3rem] group-hover:bg-[#413465]/40 transition-all"></div>
               <button 
                 onClick={() => setActiveSection('Scanner')}
-                className="relative w-full aspect-video md:aspect-[21/9] bg-blue-600 rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-95 group"
+                className="relative w-full aspect-video md:aspect-[21/9] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-95 group border-4 border-[#fab53c]/20"
+                style={{
+                  background: 'linear-gradient(135deg, #413465 0%, #7ec2d0 40%, #93bfc7 70%, #fab53c 100%)'
+                }}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
                 
                 <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md border border-white/30 animate-float shadow-2xl">
-                  <ScanBarcode className="w-10 h-10 text-[#ffeb63]" />
+                  <ScanBarcode className="w-10 h-10 text-[#F4F4F4]" />
                 </div>
                 <div className="text-center z-10">
                   <h2 className="text-2xl font-black text-white">امسح الباركود</h2>
-                  <p className="text-white/70 text-sm font-bold mt-1">فتاح يا عليم رزاق يا كريم</p>
+                  <p className="text-white/80 text-sm font-bold mt-1">فتاح يا عليم رزاق يا كريم</p>
                 </div>
-                <div className="absolute left-0 right-0 h-1.5 bg-gradient-to-t from-red-600 via-red-500 to-red-400 shadow-[0_0_20px_rgba(239,68,68,1)] animate-[scan_1.2s_infinite] pointer-events-none"></div>
+                {/* خط المسح بالألوان الجديدة */}
+                <div className="absolute left-0 right-0 h-1.5 bg-gradient-to-r from-[#fab53c] via-[#7ec2d0] to-[#fab53c] shadow-[0_0_20px_rgba(250,181,60,0.8)] animate-[scan_1.2s_infinite] pointer-events-none"></div>
               </button>
             </div>
 
