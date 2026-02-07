@@ -1,6 +1,5 @@
 "use client"
 
-// Inspired by react-hot-toast library
 import * as React from "react"
 
 import type {
@@ -9,7 +8,7 @@ import type {
 } from "@/components/ui/toast"
 
 const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000 // جعل الرسالة تختفي بسرعة البرق (ثانية واحدة فقط)
+const TOAST_REMOVE_DELAY = 500 // تقليل مدة الإزالة من الذاكرة إلى نصف ثانية
 
 type ToasterToast = ToastProps & {
   id: string
@@ -155,6 +154,7 @@ function toast({ ...props }: Toast) {
     toast: {
       ...props,
       id,
+      duration: 2000, // ضبط مدة الظهور الافتراضية لتكون سريعة (ثانيتين فقط)
       open: true,
       onOpenChange: (open) => {
         if (!open) dismiss()
