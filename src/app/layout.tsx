@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const viewport: Viewport = {
-  themeColor: '#23b936',
+  themeColor: '#0C2B4E',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -31,7 +31,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet" />
-        <link rel="apple-touch-icon" href="https://placehold.co/180x180/23b936/white?text=Osama" />
+        <link rel="apple-touch-icon" href="https://placehold.co/180x180/F4F4F4/0C2B4E?text=Osama" />
       </head>
       <body className="font-body antialiased">
         {children}
