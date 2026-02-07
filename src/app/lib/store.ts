@@ -24,17 +24,23 @@ export function useDeviceStore() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
+    // التحقق الفوري من المستخدم الحالي (يعمل أوفلاين إذا كان مسجلاً سابقاً)
+    if (auth.currentUser) {
+      setCurrentUser(auth.currentUser);
+    }
+    
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
+      if (!user) {
+        // إذا لم يكن هناك مستخدم، نعتبر المحمل انتهى لنعرض واجهة فارغة أو تسجيل الدخول
+        setIsLoaded(true);
+      }
     });
     return () => unsubscribeAuth();
   }, []);
 
   useEffect(() => {
-    if (!currentUser) {
-      if (isLoaded) setRecords([]);
-      return;
-    }
+    if (!currentUser) return;
 
     const q = query(
       collection(db, COLLECTION_NAME), 
@@ -47,6 +53,7 @@ export function useDeviceStore() {
         id: doc.id,
       })) as DeviceRecord[];
       
+      // الترتيب محلياً لتجنب مشاكل الفهرسة (Indexes) في البداية
       const sortedRecords = updatedRecords.sort((a, b) => 
         new Date(b.entryDate).getTime() - new Date(a.entryDate).getTime()
       );
@@ -54,20 +61,22 @@ export function useDeviceStore() {
       setRecords(sortedRecords);
       setIsLoaded(true);
     }, (error) => {
-      console.error("Firestore Listen Error:", error);
+      console.error("Firestore Offline Error:", error);
+      // حتى لو فشل الاتصال، نعتبره "محمل" ليعرض ما في الذاكرة المحلية
       setIsLoaded(true);
     });
 
     return () => unsubscribe();
-  }, [currentUser, isLoaded]);
+  }, [currentUser]);
 
   const addRecord = async (record: Omit<DeviceRecord, 'id' | 'entryDate' | 'status' | 'userId'>) => {
-    if (!currentUser) throw new Error("يجب تسجيل الدخول أولاً");
+    const user = currentUser || auth.currentUser;
+    if (!user) throw new Error("يجب تسجيل الدخول أولاً");
     
     try {
       const newRecordData = {
         ...record,
-        userId: currentUser.uid,
+        userId: user.uid,
         entryDate: new Date().toISOString(),
         status: 'Active' as const,
       };
@@ -124,7 +133,7 @@ export function useDeviceStore() {
 
   return {
     records,
-    isLoaded: isLoaded && !!currentUser,
+    isLoaded: isLoaded, // إظهار المحتوى بمجرد اكتمال الفحص الأولي
     addRecord,
     archiveRecord,
     deleteRecord,
