@@ -19,7 +19,9 @@ import {
   Zap,
   ShieldCheck,
   Download,
-  X
+  X,
+  Keyboard,
+  Search
 } from 'lucide-react';
 import { 
   Dialog, 
@@ -30,6 +32,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { useInstallPrompt } from '@/hooks/use-install-prompt';
 
 type AppSection = 'Menu' | 'Scanner' | 'Archive' | 'Reports';
@@ -40,6 +43,7 @@ export default function Home() {
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [scannedBarcode, setScannedBarcode] = useState<string | null>(null);
   const [lookupDevice, setLookupDevice] = useState<any>(null);
+  const [manualInput, setManualInput] = useState('');
   const { toast } = useToast();
   const { isInstallable, promptInstall } = useInstallPrompt();
   
@@ -65,6 +69,14 @@ export default function Home() {
       setShowForm(true);
     }
   }, [findByBarcode]);
+
+  const handleManualSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (manualInput.trim()) {
+      handleScan(manualInput);
+      setManualInput('');
+    }
+  };
 
   const onFormSubmit = (data: any) => {
     addRecord(data);
@@ -156,7 +168,7 @@ export default function Home() {
       <main className="flex-1 w-full max-w-2xl mx-auto p-6 pb-24">
         {activeSection === 'Menu' && (
           <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            {/* مربع الباركود - تم تعديله بالألوان الأربعة المطلوبة حصرياً */}
+            {/* مربع الباركود بالألوان الأربعة */}
             <div className="relative group">
               <div className="absolute inset-0 bg-[#413465]/30 blur-2xl rounded-[3rem] group-hover:bg-[#413465]/40 transition-all"></div>
               <button 
@@ -235,6 +247,35 @@ export default function Home() {
                 </div>
                 <span className="text-sm font-black relative z-10">التقارير</span>
               </button>
+            </div>
+
+            {/* قسم الإدخال اليدوي - تمت إعادته هنا */}
+            <div className="glass-card p-8 rounded-[3rem] border-none shadow-xl mt-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-accent/10 text-accent rounded-2xl flex items-center justify-center">
+                  <Keyboard className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-black text-gray-800">إدخال يدوي سريع</h3>
+              </div>
+              
+              <form onSubmit={handleManualSubmit} className="space-y-4">
+                <div className="relative group">
+                  <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400 group-focus-within:text-primary transition-colors" />
+                  <Input 
+                    placeholder="أدخل رمز الباركود هنا..." 
+                    className="pr-14 h-16 rounded-2xl border-none bg-gray-100/50 text-lg font-black text-right focus-visible:ring-primary shadow-inner"
+                    value={manualInput}
+                    onChange={(e) => setManualInput(e.target.value)}
+                  />
+                </div>
+                <Button 
+                  type="submit" 
+                  className="w-full h-16 bg-accent hover:bg-accent/90 text-white text-lg font-black rounded-2xl shadow-xl shadow-accent/20 transition-all active:scale-95"
+                  disabled={!manualInput.trim()}
+                >
+                  تحقق من الرقم
+                </Button>
+              </form>
             </div>
           </div>
         )}
