@@ -25,14 +25,14 @@ interface ReportsProps {
 export function Reports({ records }: ReportsProps) {
   const stats = useMemo(() => {
     const categories = {
-      Charging: records.filter(r => r.serviceType === 'Charging').length,
-      Maintenance: records.filter(r => r.serviceType === 'Maintenance').length,
-      Software: records.filter(r => r.serviceType === 'Software').length,
+      'شحن': records.filter(r => r.serviceType === 'Charging').length,
+      'صيانة': records.filter(r => r.serviceType === 'Maintenance').length,
+      'برمجة': records.filter(r => r.serviceType === 'Software').length,
     };
 
     const statusData = [
-      { name: 'Active', value: records.filter(r => r.status === 'Active').length },
-      { name: 'Archived', value: records.filter(r => r.status === 'Archived').length },
+      { name: 'نشط', value: records.filter(r => r.status === 'Active').length },
+      { name: 'مؤرشف', value: records.filter(r => r.status === 'Archived').length },
     ];
 
     const categoryData = Object.entries(categories).map(([name, value]) => ({ name, value }));
@@ -43,77 +43,77 @@ export function Reports({ records }: ReportsProps) {
   const COLORS = ['hsl(var(--primary))', 'hsl(var(--accent))', 'hsl(var(--chart-4))'];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 text-right" dir="rtl">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-primary text-primary-foreground border-none">
+        <Card className="bg-primary text-primary-foreground border-none shadow-lg rounded-[2rem]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm opacity-80">Total Serviced</CardTitle>
+            <CardTitle className="text-sm opacity-90 font-black">إجمالي الأجهزة</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{stats.total}</div>
-            <div className="flex items-center text-xs mt-2 gap-1">
+            <div className="text-4xl font-black">{stats.total}</div>
+            <div className="flex items-center text-xs mt-2 gap-1 font-bold opacity-80">
               <TrendingUp className="w-3 h-3" />
-              Lifetime volume
+              حجم العمل الكلي
             </div>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="border-none shadow-md rounded-[2rem] glass-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Unique Customers</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground font-black">عملاء مميزون</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{new Set(records.map(r => r.customerName)).size}</div>
-            <div className="flex items-center text-xs text-muted-foreground mt-2 gap-1">
+            <div className="text-4xl font-black text-gray-800">{new Set(records.map(r => r.customerName)).size}</div>
+            <div className="flex items-center text-xs text-muted-foreground mt-2 gap-1 font-bold">
               <Users className="w-3 h-3" />
-              Total client base
+              إجمالي قاعدة العملاء
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-none shadow-md rounded-[2rem] glass-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Handed Over</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground font-black">تم التسليم</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{stats.archivedCount}</div>
-            <div className="flex items-center text-xs text-green-600 mt-2 gap-1 font-medium">
+            <div className="text-4xl font-black text-gray-800">{stats.archivedCount}</div>
+            <div className="flex items-center text-xs text-green-600 mt-2 gap-1 font-black">
               <CheckCircle2 className="w-3 h-3" />
-              Completed & Delivered
+              تم الإنجاز والتسليم
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-none shadow-md rounded-[2rem] glass-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Avg. Processing</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground font-black">متوسط الإنجاز</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">1.2d</div>
-            <div className="flex items-center text-xs text-muted-foreground mt-2 gap-1">
+            <div className="text-4xl font-black text-gray-800">1.2 يوم</div>
+            <div className="flex items-center text-xs text-muted-foreground mt-2 gap-1 font-bold">
               <Clock className="w-3 h-3" />
-              Turnaround time
+              زمن الاستجابة التقريبي
             </div>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <Card className="p-6">
-          <CardHeader className="px-0 pt-0">
-            <CardTitle>Service Categories</CardTitle>
-            <CardDescription>Volume distribution across service types</CardDescription>
+        <Card className="p-8 border-none shadow-xl rounded-[2.5rem] glass-card">
+          <CardHeader className="px-0 pt-0 text-right">
+            <CardTitle className="font-black text-xl">فئات الخدمة</CardTitle>
+            <CardDescription className="font-bold">توزيع حجم العمل عبر أنواع الخدمات</CardDescription>
           </CardHeader>
-          <div className="h-[300px] w-full mt-4">
+          <div className="h-[300px] w-full mt-6">
             <ChartContainer config={{ 
-              value: { label: 'Service Volume', color: 'hsl(var(--primary))' }
+              value: { label: 'حجم الخدمة', color: 'hsl(var(--primary))' }
             }}>
               <BarChart data={stats.categoryData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} tickLine={false} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.1} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} className="font-bold" />
+                <YAxis axisLine={false} tickLine={false} className="font-bold" />
                 <Tooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                <Bar dataKey="value" radius={[10, 10, 0, 0]}>
                   {stats.categoryData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
@@ -123,22 +123,23 @@ export function Reports({ records }: ReportsProps) {
           </div>
         </Card>
 
-        <Card className="p-6">
-          <CardHeader className="px-0 pt-0">
-            <CardTitle>Completion Status</CardTitle>
-            <CardDescription>Ratio of active vs completed services</CardDescription>
+        <Card className="p-8 border-none shadow-xl rounded-[2.5rem] glass-card">
+          <CardHeader className="px-0 pt-0 text-right">
+            <CardTitle className="font-black text-xl">حالة الإنجاز</CardTitle>
+            <CardDescription className="font-bold">نسبة الخدمات النشطة مقابل المكتملة</CardDescription>
           </CardHeader>
-          <div className="h-[300px] w-full mt-4">
+          <div className="h-[300px] w-full mt-6">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={stats.statusData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
+                  innerRadius={70}
                   outerRadius={100}
-                  paddingAngle={5}
+                  paddingAngle={8}
                   dataKey="value"
+                  stroke="none"
                 >
                   {stats.statusData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={index === 0 ? 'hsl(var(--accent))' : 'hsl(var(--primary))'} />
@@ -148,14 +149,14 @@ export function Reports({ records }: ReportsProps) {
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex justify-center gap-6 text-sm">
+          <div className="flex justify-center gap-8 text-sm mt-4 font-black">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-accent" />
-              <span>Active Requests</span>
+              <div className="w-4 h-4 rounded-full bg-accent shadow-lg shadow-accent/20" />
+              <span>طلبات نشطة</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-primary" />
-              <span>Archived / Completed</span>
+              <div className="w-4 h-4 rounded-full bg-primary shadow-lg shadow-primary/20" />
+              <span>مؤرشف / مكتمل</span>
             </div>
           </div>
         </Card>
