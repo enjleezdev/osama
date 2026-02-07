@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -11,9 +10,11 @@ import {
   onSnapshot, 
   query, 
   orderBy,
+  where,
   writeBatch
 } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db, auth } from '@/lib/firebase';
+import { onAuthStateChanged, User } from 'firebase/auth';
 import { DeviceRecord } from './types';
 
 const COLLECTION_NAME = 'devices';
@@ -21,10 +22,28 @@ const COLLECTION_NAME = 'devices';
 export function useDeviceStore() {
   const [records, setRecords] = useState<DeviceRecord[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  // متابعة التغييرات في قاعدة البيانات بشكل فوري (Real-time)
+  // 1. مراقبة حالة تسجيل الدخول (التعرف على المستخدم)
   useEffect(() => {
-    const q = query(collection(db, COLLECTION_NAME), orderBy('entryDate', 'desc'));
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribeAuth();
+  }, []);
+
+  // 2. متابعة التغييرات في قاعدة البيانات (فقط البيانات الخاصة بهذا المستخدم)
+  useEffect(() => {
+    if (!currentUser) {
+      if (isLoaded) setRecords([]); // مسح البيانات إذا سجل خروج
+      return;
+    }
+
+    const q = query(
+      collection(db, COLLECTION_NAME), 
+      where('userId', '==', currentUser.uid),
+      orderBy('entryDate', 'desc')
+    );
     
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const updatedRecords = snapshot.docs.map(doc => ({
@@ -40,12 +59,15 @@ export function useDeviceStore() {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [currentUser, isLoaded]);
 
-  const addRecord = async (record: Omit<DeviceRecord, 'id' | 'entryDate' | 'status'>) => {
+  const addRecord = async (record: Omit<DeviceRecord, 'id' | 'entryDate' | 'status' | 'userId'>) => {
+    if (!currentUser) throw new Error("يجب تسجيل الدخول أولاً");
+    
     try {
       const newRecordData = {
         ...record,
+        userId: currentUser.uid,
         entryDate: new Date().toISOString(),
         status: 'Active' as const,
       };
@@ -102,13 +124,14 @@ export function useDeviceStore() {
 
   return {
     records,
-    isLoaded,
+    isLoaded: isLoaded && !!currentUser,
     addRecord,
     archiveRecord,
     deleteRecord,
     clearArchive,
     getActiveRecords,
     getArchivedRecords,
-    findByBarcode
+    findByBarcode,
+    userId: currentUser?.uid
   };
 }

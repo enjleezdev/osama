@@ -2,6 +2,7 @@ export type ServiceType = 'Charging' | 'Maintenance' | 'Software';
 
 export interface DeviceRecord {
   id: string;
+  userId: string;
   barcode: string;
   deviceName: string;
   customerName: string;
@@ -12,4 +13,4 @@ export interface DeviceRecord {
   archivedDate?: string;
 }
 
-export type NewDeviceRecord = Omit<DeviceRecord, 'id' | 'entryDate' | 'status'>;
+export type NewDeviceRecord = Omit<DeviceRecord, 'id' | 'entryDate' | 'status' | 'userId'>;
