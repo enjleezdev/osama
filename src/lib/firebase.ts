@@ -4,16 +4,16 @@ import { getFirestore, initializeFirestore, persistentLocalCache, persistentMult
 import { getAuth, signInAnonymously } from "firebase/auth";
 
 /**
- * يا بطل، هنا تحط مفاتيح الربط اللي نسختها من موقع Firebase
- * استبدل الكلمات اللي بين القوسين بالقيم الحقيقية اللي طلعت لك
+ * إعدادات الربط مع مخازن Osama Mobile السحابية
  */
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "ضع الـ apiKey هنا",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "ضع الـ authDomain هنا",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "ضع الـ projectId هنا",
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "ضع الـ storageBucket هنا",
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "ضع الـ messagingSenderId هنا",
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "ضع الـ appId هنا"
+  apiKey: "AIzaSyDCWm6xoev5JAYtRLo51BkFyYyn---_JJA",
+  authDomain: "osama-mobile.firebaseapp.com",
+  projectId: "osama-mobile",
+  storageBucket: "osama-mobile.firebasestorage.app",
+  messagingSenderId: "365943909277",
+  appId: "1:365943909277:web:dd55961fb7072f01179d74",
+  measurementId: "G-VVEBGDMMWW"
 };
 
 // تهيئة التطبيق
@@ -26,7 +26,7 @@ const db = initializeFirestore(app, {
 
 const auth = getAuth(app);
 
-// تفعيل الدخول المجهول تلقائياً عشان البيانات تكون محمية
+// تفعيل الدخول المجهول تلقائياً عشان البيانات تكون محمية وسرية للمحل فقط
 if (typeof window !== "undefined") {
   signInAnonymously(auth).catch(err => console.error("فشل الاتصال بـ Firebase:", err));
 }
