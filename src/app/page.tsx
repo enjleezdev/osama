@@ -156,27 +156,30 @@ export default function Home() {
       <main className="flex-1 w-full max-w-2xl mx-auto p-6 pb-24">
         {activeSection === 'Menu' && (
           <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            {/* مربع الباركود - تم تعديله بالألوان المطلوبة فقط */}
+            {/* مربع الباركود - تم تعديله بالألوان الأربعة المطلوبة حصرياً */}
             <div className="relative group">
               <div className="absolute inset-0 bg-[#413465]/30 blur-2xl rounded-[3rem] group-hover:bg-[#413465]/40 transition-all"></div>
               <button 
                 onClick={() => setActiveSection('Scanner')}
-                className="relative w-full aspect-video md:aspect-[21/9] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-95 group border-4 border-[#fab53c]/20"
+                className="relative w-full aspect-video md:aspect-[21/9] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-95 group border-4 border-white/5"
                 style={{
-                  background: 'linear-gradient(135deg, #413465 0%, #7ec2d0 40%, #93bfc7 70%, #fab53c 100%)'
+                  backgroundColor: '#413465'
                 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
                 
-                <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md border border-white/30 animate-float shadow-2xl">
-                  <ScanBarcode className="w-10 h-10 text-[#F4F4F4]" />
+                <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-md border border-white/10 animate-float shadow-2xl">
+                  <ScanBarcode className="w-10 h-10" style={{ color: '#7ec2d0' }} />
                 </div>
                 <div className="text-center z-10">
-                  <h2 className="text-2xl font-black text-white">امسح الباركود</h2>
-                  <p className="text-white/80 text-sm font-bold mt-1">فتاح يا عليم رزاق يا كريم</p>
+                  <h2 className="text-2xl font-black" style={{ color: '#93bfc7' }}>امسح الباركود</h2>
+                  <p className="text-white/70 text-sm font-bold mt-1">فتاح يا عليم رزاق يا كريم</p>
                 </div>
-                {/* خط المسح بالألوان الجديدة */}
-                <div className="absolute left-0 right-0 h-1.5 bg-gradient-to-r from-[#fab53c] via-[#7ec2d0] to-[#fab53c] shadow-[0_0_20px_rgba(250,181,60,0.8)] animate-[scan_1.2s_infinite] pointer-events-none"></div>
+                {/* الخط المتحرك باللون المطلوب */}
+                <div 
+                  className="absolute left-0 right-0 h-1.5 shadow-[0_0_20px_rgba(250,181,60,0.7)] animate-[scan_1.2s_infinite] pointer-events-none" 
+                  style={{ backgroundColor: '#fab53c' }}
+                ></div>
               </button>
             </div>
 
