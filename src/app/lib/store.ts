@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -10,7 +9,6 @@ import {
   doc, 
   onSnapshot, 
   query, 
-  orderBy,
   where,
   writeBatch
 } from 'firebase/firestore';
@@ -25,7 +23,6 @@ export function useDeviceStore() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  // 1. مراقبة حالة تسجيل الدخول (التعرف على المستخدم)
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
@@ -33,17 +30,15 @@ export function useDeviceStore() {
     return () => unsubscribeAuth();
   }, []);
 
-  // 2. متابعة التغييرات في قاعدة البيانات (فقط البيانات الخاصة بهذا المستخدم)
   useEffect(() => {
     if (!currentUser) {
-      if (isLoaded) setRecords([]); // مسح البيانات إذا سجل خروج
+      if (isLoaded) setRecords([]);
       return;
     }
 
     const q = query(
       collection(db, COLLECTION_NAME), 
-      where('userId', '==', currentUser.uid),
-      orderBy('entryDate', 'desc')
+      where('userId', '==', currentUser.uid)
     );
     
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -52,7 +47,11 @@ export function useDeviceStore() {
         id: doc.id,
       })) as DeviceRecord[];
       
-      setRecords(updatedRecords);
+      const sortedRecords = updatedRecords.sort((a, b) => 
+        new Date(b.entryDate).getTime() - new Date(a.entryDate).getTime()
+      );
+      
+      setRecords(sortedRecords);
       setIsLoaded(true);
     }, (error) => {
       console.error("Firestore Listen Error:", error);
