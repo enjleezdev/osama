@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useCallback } from 'react';
@@ -21,7 +22,8 @@ import {
   Download,
   X,
   Keyboard,
-  Search
+  Search,
+  AlertTriangle
 } from 'lucide-react';
 import { 
   Dialog, 
@@ -29,6 +31,17 @@ import {
   DialogHeader, 
   DialogTitle 
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -249,7 +262,6 @@ export default function Home() {
               </button>
             </div>
 
-            {/* قسم الإدخال اليدوي - تمت إعادته هنا */}
             <div className="glass-card p-8 rounded-[3rem] border-none shadow-xl mt-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-accent/10 text-accent rounded-2xl flex items-center justify-center">
@@ -319,7 +331,6 @@ export default function Home() {
         </p>
       </footer>
 
-      {/* نموذج تسجيل خدمة جديدة */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent className="w-[95vw] max-w-xl max-h-[90vh] overflow-y-auto rounded-[3rem] border-none shadow-2xl p-0">
           <DialogHeader className="p-6 pb-0 sr-only">
@@ -336,7 +347,6 @@ export default function Home() {
         </DialogContent>
       </Dialog>
 
-      {/* تفاصيل الجهاز المسجل (الموجود مسبقاً) */}
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
         <DialogContent className="w-[92vw] max-md p-0 overflow-hidden border-none shadow-2xl rounded-[3rem]">
           <DialogHeader className="p-6 pb-0 sr-only">
@@ -375,20 +385,42 @@ export default function Home() {
                 </div>
 
                 <div className="flex flex-col gap-3 pt-4">
-                  <Button 
-                    className="w-full bg-primary hover:bg-primary/90 h-16 text-lg font-black rounded-[1.5rem] shadow-xl shadow-primary/20"
-                    onClick={() => {
-                      archiveRecord(lookupDevice.id);
-                      setShowDetailsDialog(false);
-                      setActiveSection('Archive');
-                      toast({
-                        title: "تم التسليم بنجاح ✨",
-                        description: "تم نقل السجل إلى الأرشيف.",
-                      });
-                    }}
-                  >
-                    إتمام وتسليم الجهاز
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button className="w-full bg-primary hover:bg-primary/90 h-16 text-lg font-black rounded-[1.5rem] shadow-xl shadow-primary/20">
+                        إتمام وتسليم الجهاز
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="rounded-[2.5rem] border-none shadow-2xl">
+                      <AlertDialogHeader className="text-right">
+                        <AlertDialogTitle className="font-black text-xl flex items-center justify-end gap-2">
+                          تأكيد تسليم الجهاز
+                          <AlertTriangle className="w-6 h-6 text-primary" />
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-right font-bold text-gray-600">
+                          هل أنت متأكد من رغبتك في إتمام الخدمة ونقل الجهاز للأرشيف؟ سيتم اعتبار المهمة منتهية.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter className="flex-row-reverse gap-3">
+                        <AlertDialogAction 
+                          onClick={() => {
+                            archiveRecord(lookupDevice.id);
+                            setShowDetailsDialog(false);
+                            toast({
+                              title: "تم التسليم بنجاح ✨",
+                              description: "تم نقل السجل إلى الأرشيف.",
+                            });
+                          }} 
+                          className="bg-primary hover:bg-primary/90 text-white font-black rounded-xl h-12 flex-1"
+                        >
+                          نعم، إتمام التسليم
+                        </AlertDialogAction>
+                        <AlertDialogCancel className="font-black rounded-xl h-12 flex-1 border-none bg-gray-100">
+                          إلغاء
+                        </AlertDialogCancel>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             </div>
