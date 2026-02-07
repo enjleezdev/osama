@@ -1,60 +1,99 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
+import { 
+  collection, 
+  addDoc, 
+  updateDoc, 
+  deleteDoc, 
+  doc, 
+  onSnapshot, 
+  query, 
+  orderBy,
+  writeBatch
+} from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { DeviceRecord } from './types';
 
-const STORAGE_KEY = 'serviceflow_devices';
+const COLLECTION_NAME = 'devices';
 
 export function useDeviceStore() {
   const [records, setRecords] = useState<DeviceRecord[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // متابعة التغييرات في قاعدة البيانات بشكل فوري (Real-time)
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        setRecords(JSON.parse(stored));
-      } catch (e) {
-        console.error("Failed to parse stored records", e);
-      }
-    }
-    setIsLoaded(true);
+    const q = query(collection(db, COLLECTION_NAME), orderBy('entryDate', 'desc'));
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const updatedRecords = snapshot.docs.map(doc => ({
+        ...doc.data(),
+        id: doc.id,
+      })) as DeviceRecord[];
+      
+      setRecords(updatedRecords);
+      setIsLoaded(true);
+    }, (error) => {
+      console.error("Firestore Listen Error:", error);
+      setIsLoaded(true);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  const addRecord = async (record: Omit<DeviceRecord, 'id' | 'entryDate' | 'status'>) => {
+    try {
+      const newRecordData = {
+        ...record,
+        entryDate: new Date().toISOString(),
+        status: 'Active' as const,
+      };
+      const docRef = await addDoc(collection(db, COLLECTION_NAME), newRecordData);
+      return { id: docRef.id, ...newRecordData };
+    } catch (e) {
+      console.error("Error adding document: ", e);
+      throw e;
     }
-  }, [records, isLoaded]);
-
-  const addRecord = (record: Omit<DeviceRecord, 'id' | 'entryDate' | 'status'>) => {
-    const newRecord: DeviceRecord = {
-      ...record,
-      id: Math.random().toString(36).substr(2, 9),
-      entryDate: new Date().toISOString(),
-      status: 'Active',
-    };
-    setRecords(prev => [...prev, newRecord]);
-    return newRecord;
   };
 
-  const archiveRecord = (id: string) => {
-    setRecords(prev => prev.map(r => 
-      r.id === id ? { ...r, status: 'Archived', archivedDate: new Date().toISOString() } : r
-    ));
+  const archiveRecord = async (id: string) => {
+    try {
+      const docRef = doc(db, COLLECTION_NAME, id);
+      await updateDoc(docRef, {
+        status: 'Archived',
+        archivedDate: new Date().toISOString()
+      });
+    } catch (e) {
+      console.error("Error archiving document: ", e);
+    }
   };
 
-  const deleteRecord = (id: string) => {
-    setRecords(prev => prev.filter(r => r.id !== id));
+  const deleteRecord = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, COLLECTION_NAME, id));
+    } catch (e) {
+      console.error("Error deleting document: ", e);
+    }
   };
 
-  const clearArchive = () => {
-    setRecords(prev => prev.filter(r => r.status !== 'Archived'));
+  const clearArchive = async () => {
+    try {
+      const archivedRecords = records.filter(r => r.status === 'Archived');
+      const batch = writeBatch(db);
+      
+      archivedRecords.forEach(record => {
+        batch.delete(doc(db, COLLECTION_NAME, record.id));
+      });
+      
+      await batch.commit();
+    } catch (e) {
+      console.error("Error clearing archive: ", e);
+    }
   };
 
   const findByBarcode = useCallback((barcode: string) => {
     const cleanBarcode = barcode.trim();
-    // نبحث عن الجهاز في القائمة النشطة أولاً
     return records.find(r => r.barcode.trim() === cleanBarcode && r.status === 'Active');
   }, [records]);
 
