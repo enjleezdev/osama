@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useCallback } from 'react';
@@ -55,14 +56,13 @@ export default function Home() {
     const cleanBarcode = barcode.trim();
     const existing = findByBarcode(cleanBarcode);
     
+    // لا يوجد تنبيه نجاح هنا، الظهور المباشر للنافذة هو الإشارة
     if (existing) {
       setLookupDevice(existing);
       setShowDetailsDialog(true);
-      // Removed success toast per user request
     } else {
       setScannedBarcode(cleanBarcode);
       setShowForm(true);
-      // Removed any possible success toast here too
     }
   }, [findByBarcode]);
 
@@ -107,10 +107,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-transparent text-foreground flex flex-col selection:bg-primary/30 font-body relative">
-      <div className="fixed top-0 left-0 right-0 h-2 sudanese-border-top z-[60] opacity-30"></div>
-      <div className="fixed bottom-0 left-0 right-0 h-2 sudanese-border-bottom z-[60] opacity-30"></div>
-      <div className="fixed inset-0 -z-10 sudanese-pattern opacity-[0.03] pointer-events-none"></div>
-
+      <div className="fixed top-0 left-0 right-0 h-2 z-[60] opacity-30"></div>
+      
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] right-[-10%] w-[50%] aspect-square rounded-full bg-primary/5 blur-[120px]"></div>
         <div className="absolute bottom-[-10%] left-[-10%] w-[50%] aspect-square rounded-full bg-accent/5 blur-[120px]"></div>
@@ -150,7 +148,6 @@ export default function Home() {
             </Button>
           )}
           <div className="w-10 h-10 bg-primary/10 rounded-2xl flex items-center justify-center text-primary border border-primary/20 relative group overflow-hidden">
-            <div className="absolute inset-0 bg-primary/10 sudanese-pattern opacity-20 group-hover:scale-150 transition-transform"></div>
             <Zap className="w-5 h-5 fill-current animate-pulse relative z-10" />
           </div>
         </div>
@@ -166,7 +163,6 @@ export default function Home() {
                 className="relative w-full aspect-video md:aspect-[21/9] bg-blue-600 rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-95 group"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
-                <div className="absolute inset-0 opacity-10 pointer-events-none sudanese-pattern"></div>
                 
                 <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md border border-white/30 animate-float shadow-2xl">
                   <ScanBarcode className="w-10 h-10 text-[#ffeb63]" />
@@ -175,19 +171,17 @@ export default function Home() {
                   <h2 className="text-2xl font-black text-white">امسح الباركود</h2>
                   <p className="text-white/70 text-sm font-bold mt-1">فتاح يا عليم رزاق يا كريم</p>
                 </div>
-                <div className="absolute left-0 right-0 h-1.5 bg-gradient-to-t from-red-600 via-red-500 to-red-400 shadow-[0_0_20px_rgba(239,68,68,1)] animate-[scan_3s_infinite] pointer-events-none"></div>
+                <div className="absolute left-0 right-0 h-1.5 bg-gradient-to-t from-red-600 via-red-500 to-red-400 shadow-[0_0_20px_rgba(239,68,68,1)] animate-[scan_1.2s_infinite] pointer-events-none"></div>
               </button>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
                <div className="glass-card p-5 rounded-[2rem] flex flex-col gap-2 relative overflow-hidden group border-none shadow-md">
-                  <div className="absolute -right-4 -top-4 w-16 h-16 bg-primary/10 rounded-full group-hover:scale-150 transition-transform"></div>
                   <Cpu className="w-6 h-6 text-primary relative z-10" />
                   <span className="text-3xl font-black text-gray-800">{activeCount}</span>
                   <span className="text-xs text-muted-foreground font-bold uppercase tracking-wider">قيد العمل</span>
                </div>
                <div className="glass-card p-5 rounded-[2rem] flex flex-col gap-2 relative overflow-hidden group border-none shadow-md">
-                  <div className="absolute -right-4 -top-4 w-16 h-16 bg-accent/10 rounded-full group-hover:scale-150 transition-transform"></div>
                   <Smartphone className="w-6 h-6 text-accent relative z-10" />
                   <span className="text-3xl font-black text-gray-800">{records.length}</span>
                   <span className="text-xs text-muted-foreground font-bold uppercase tracking-wider">الإجمالي</span>
@@ -201,7 +195,6 @@ export default function Home() {
                   لوحة العمل الحالية
                 </h3>
               </div>
-              <div className="h-4 sudanese-divider opacity-20 mb-2"></div>
               <Dashboard 
                 records={records} 
                 onArchive={(id) => {
@@ -246,7 +239,6 @@ export default function Home() {
       </main>
 
       <footer className="py-8 px-6 text-center border-t bg-white/50 backdrop-blur-sm rounded-t-[3rem] relative overflow-hidden">
-        <div className="absolute inset-0 sudanese-pattern opacity-[0.02]"></div>
         <p className="text-sm text-gray-500 font-bold flex flex-col items-center gap-2 relative z-10">
           <span>تصميم وتطوير بكل ❤️ بواسطة</span>
           <a 
@@ -287,7 +279,6 @@ export default function Home() {
             <div className="bg-white text-right">
               <div className="bg-primary p-8 text-white relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
-                <div className="absolute inset-0 sudanese-pattern opacity-10"></div>
                 
                 <div className="flex flex-col items-center mt-6 relative z-10">
                   <div className="w-20 h-20 bg-white/20 rounded-[2rem] flex items-center justify-center mb-4 backdrop-blur-md border border-white/30 animate-float">

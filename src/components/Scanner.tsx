@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -6,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { ScanBarcode, Keyboard, Search, AlertCircle, X, ShieldCheck, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { useToast } from '@/hooks/use-toast';
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
 
 interface ScannerProps {
@@ -18,7 +18,6 @@ export function Scanner({ onScan }: ScannerProps) {
   const [isScanning, setIsScanning] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
-  const { toast } = useToast();
 
   const lastResultRef = useRef<string>("");
   const consecutiveMatchesRef = useRef<number>(0);
@@ -59,7 +58,6 @@ export function Scanner({ onScan }: ScannerProps) {
                 onScan(decodedText);
                 stopScanning();
                 setIsScanning(false);
-                // Removed success toast per user request
                 lastResultRef.current = "";
                 consecutiveMatchesRef.current = 0;
               }
@@ -139,7 +137,7 @@ export function Scanner({ onScan }: ScannerProps) {
                   <div className="absolute -bottom-1 -right-1 w-10 h-10 border-b-8 border-r-8 border-primary rounded-br-2xl"></div>
                   
                   <div className="absolute inset-0 bg-primary/5 animate-pulse"></div>
-                  <div className="w-full h-1.5 bg-gradient-to-t from-red-600 via-red-500 to-red-400 absolute top-0 shadow-[0_0_20px_rgba(239,68,68,1)] animate-[scan_2s_infinite]"></div>
+                  <div className="w-full h-1.5 bg-gradient-to-t from-red-600 via-red-500 to-red-400 absolute top-0 shadow-[0_0_20px_rgba(239,68,68,1)] animate-[scan_1.2s_infinite]"></div>
                 </div>
                 
                 <div className="mt-12 flex flex-col items-center gap-3">
