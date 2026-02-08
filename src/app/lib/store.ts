@@ -6,14 +6,49 @@ import { supabase } from '@/lib/supabase';
 import { DeviceRecord } from './types';
 
 const STORAGE_KEY = 'osama_mobile_records';
+const DEVICE_ID_KEY = 'osama_mobile_device_id';
 
 export function useDeviceStore() {
   const [records, setRecords] = useState<DeviceRecord[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
+  const [deviceId, setDeviceId] = useState<string | null>(null);
 
-  // تحميل البيانات من التخزين المحلي فوراً
+  // الحصول على أو إنشاء بصمة الجهاز الفريدة
+  const getOrCreateDeviceId = () => {
+    let id = localStorage.getItem(DEVICE_ID_KEY);
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem(DEVICE_ID_KEY, id);
+    }
+    return id;
+  };
+
+  const syncWithSupabase = async (currentDeviceId: string) => {
+    if (!navigator.onLine || supabase.supabaseUrl === 'invalid') return;
+
+    try {
+      // جلب البيانات الخاصة بهذا الجهاز فقط
+      const { data, error } = await supabase
+        .from('devices')
+        .select('*')
+        .eq('userId', currentDeviceId)
+        .order('entryDate', { ascending: false });
+
+      if (!error && data) {
+        setRecords(data);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      }
+    } catch (e) {
+      console.warn("Supabase sync skipped due to connection.");
+    }
+  };
+
   useEffect(() => {
+    const currentId = getOrCreateDeviceId();
+    setDeviceId(currentId);
+
+    // تحميل البيانات المحلية فوراً للسرعة
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       setRecords(JSON.parse(saved));
@@ -25,7 +60,7 @@ export function useDeviceStore() {
 
       const handleOnline = () => {
         setIsOnline(true);
-        syncWithSupabase();
+        syncWithSupabase(currentId);
       };
       const handleOffline = () => setIsOnline(false);
 
@@ -34,7 +69,7 @@ export function useDeviceStore() {
 
       // محاولة المزامنة الأولية إذا كان متصلاً
       if (navigator.onLine) {
-        syncWithSupabase();
+        syncWithSupabase(currentId);
       }
 
       return () => {
@@ -44,29 +79,12 @@ export function useDeviceStore() {
     }
   }, []);
 
-  const syncWithSupabase = async () => {
-    if (!navigator.onLine || supabase.supabaseUrl === 'invalid') return;
-
-    try {
-      const { data, error } = await supabase
-        .from('devices')
-        .select('*')
-        .order('entryDate', { ascending: false });
-
-      if (!error && data) {
-        setRecords(data);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      }
-    } catch (e) {
-      console.warn("Supabase sync skipped.");
-    }
-  };
-
   const addRecord = async (record: Omit<DeviceRecord, 'id' | 'entryDate' | 'status' | 'userId'>) => {
+    const currentId = deviceId || getOrCreateDeviceId();
     const newRecord: DeviceRecord = {
       ...record,
       id: crypto.randomUUID(),
-      userId: 'local_user', 
+      userId: currentId, 
       entryDate: new Date().toISOString(),
       status: 'Active',
     };
@@ -75,11 +93,12 @@ export function useDeviceStore() {
     setRecords(updatedRecords);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedRecords));
 
+    // الرفع للسحاب في الخلفية إذا كان متصلاً
     if (navigator.onLine && supabase.supabaseUrl !== 'invalid') {
       try {
         await supabase.from('devices').insert([newRecord]);
       } catch (e) {
-        console.error("Cloud insert failed, saved locally.");
+        console.error("Cloud saving failed, data kept locally.");
       }
     }
 
@@ -128,7 +147,7 @@ export function useDeviceStore() {
 
     if (navigator.onLine && supabase.supabaseUrl !== 'invalid') {
       try {
-        await supabase.from('devices').delete().eq('status', 'Archived');
+        await supabase.from('devices').delete().eq('status', 'Archived').eq('userId', deviceId);
       } catch (e) {
         console.error("Cloud clear failed.");
       }
