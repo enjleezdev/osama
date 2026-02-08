@@ -12,8 +12,8 @@ export function useDeviceStore() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
 
+  // تحميل البيانات من التخزين المحلي فوراً
   useEffect(() => {
-    // تحميل البيانات من التخزين المحلي فوراً
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       setRecords(JSON.parse(saved));
@@ -32,6 +32,7 @@ export function useDeviceStore() {
       window.addEventListener('online', handleOnline);
       window.addEventListener('offline', handleOffline);
 
+      // محاولة المزامنة الأولية إذا كان متصلاً
       if (navigator.onLine) {
         syncWithSupabase();
       }
@@ -44,21 +45,20 @@ export function useDeviceStore() {
   }, []);
 
   const syncWithSupabase = async () => {
-    try {
-      // نتأكد من وجود رابط حقيقي قبل المحاولة لتجنب الانهيار
-      if (!supabase.supabaseUrl.includes('your-project-id')) {
-        const { data, error } = await supabase
-          .from('devices')
-          .select('*')
-          .order('entryDate', { ascending: false });
+    if (!navigator.onLine || supabase.supabaseUrl === 'invalid') return;
 
-        if (!error && data) {
-          setRecords(data);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        }
+    try {
+      const { data, error } = await supabase
+        .from('devices')
+        .select('*')
+        .order('entryDate', { ascending: false });
+
+      if (!error && data) {
+        setRecords(data);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       }
     } catch (e) {
-      console.warn("Supabase sync skipped: Configuration pending.");
+      console.warn("Supabase sync skipped.");
     }
   };
 
@@ -66,7 +66,7 @@ export function useDeviceStore() {
     const newRecord: DeviceRecord = {
       ...record,
       id: crypto.randomUUID(),
-      userId: 'user_' + (Math.random().toString(36).substring(7)), 
+      userId: 'local_user', 
       entryDate: new Date().toISOString(),
       status: 'Active',
     };
@@ -75,7 +75,7 @@ export function useDeviceStore() {
     setRecords(updatedRecords);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedRecords));
 
-    if (navigator.onLine && !supabase.supabaseUrl.includes('your-project-id')) {
+    if (navigator.onLine && supabase.supabaseUrl !== 'invalid') {
       try {
         await supabase.from('devices').insert([newRecord]);
       } catch (e) {
@@ -87,18 +87,19 @@ export function useDeviceStore() {
   };
 
   const archiveRecord = async (id: string) => {
+    const archivedDate = new Date().toISOString();
     const updatedRecords = records.map(r => 
-      r.id === id ? { ...r, status: 'Archived' as const, archivedDate: new Date().toISOString() } : r
+      r.id === id ? { ...r, status: 'Archived' as const, archivedDate } : r
     );
     
     setRecords(updatedRecords);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedRecords));
 
-    if (navigator.onLine && !supabase.supabaseUrl.includes('your-project-id')) {
+    if (navigator.onLine && supabase.supabaseUrl !== 'invalid') {
       try {
         await supabase
           .from('devices')
-          .update({ status: 'Archived', archivedDate: new Date().toISOString() })
+          .update({ status: 'Archived', archivedDate })
           .eq('id', id);
       } catch (e) {
         console.error("Cloud update failed.");
@@ -111,7 +112,7 @@ export function useDeviceStore() {
     setRecords(updatedRecords);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedRecords));
 
-    if (navigator.onLine && !supabase.supabaseUrl.includes('your-project-id')) {
+    if (navigator.onLine && supabase.supabaseUrl !== 'invalid') {
       try {
         await supabase.from('devices').delete().eq('id', id);
       } catch (e) {
@@ -125,7 +126,7 @@ export function useDeviceStore() {
     setRecords(updatedRecords);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedRecords));
 
-    if (navigator.onLine && !supabase.supabaseUrl.includes('your-project-id')) {
+    if (navigator.onLine && supabase.supabaseUrl !== 'invalid') {
       try {
         await supabase.from('devices').delete().eq('status', 'Archived');
       } catch (e) {

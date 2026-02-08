@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster"
 import Script from 'next/script';
 
 export const viewport: Viewport = {
-  themeColor: '#0C2B4E',
+  themeColor: '#23b936',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -33,6 +33,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet" />
+        <link rel="manifest" href="/manifest.webmanifest" />
       </head>
       <body className="font-body antialiased">
         {children}
