@@ -1,12 +1,11 @@
-
-const CACHE_NAME = 'osama-mobile-v1';
+const CACHE_NAME = 'osama-mobile-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/manifest.webmanifest',
   'https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap'
 ];
 
-// تثبيت الخدمة وحفظ الملفات الأساسية
+// تثبيت المحرك وحفظ الملفات الأساسية
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -16,33 +15,48 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// تفعيل الخدمة وتنظيف الكاش القديم
+// تنظيف الكاش القديم عند التحديث
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
+        cacheNames.filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
       );
     })
   );
-  self.clients.claim();
 });
 
-// التعامل مع الطلبات لضمان العمل بدون إنترنت
-// ملاحظة: هذا المستمع ضروري جداً لظهور زر "تثبيت التطبيق" في المتصفح
+// استراتيجية التشغيل: حاول من الشبكة، وإذا فشلت (أوفلاين) خذ من الكاش
 self.addEventListener('fetch', (event) => {
+  // تخطي طلبات جوجل وسوبابيز لجلب أحدث البيانات دوماً إذا كان في إنترنت
+  if (event.request.url.includes('supabase.co') || event.request.url.includes('googleapis')) {
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request).catch(() => {
-        // إذا فشل الاتصال ولم يكن الملف في الكاش، نرجع الصفحة الرئيسية
-        if (event.request.mode === 'navigate') {
-          return caches.match('/');
+    fetch(event.request)
+      .then((response) => {
+        // إذا نجح الطلب، خذ نسخة منه للكاش وارجع الاستجابة
+        if (response.status === 200) {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
         }
-      });
-    })
+        return response;
+      })
+      .catch(() => {
+        // إذا فشل الطلب (أوفلاين)، ابحث عنه في الكاش
+        return caches.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          // إذا كان الطلب لصفحة ولم نجدها، ارجع الصفحة الرئيسية (Offline Fallback)
+          if (event.request.mode === 'navigate') {
+            return caches.match('/');
+          }
+        });
+      })
   );
 });

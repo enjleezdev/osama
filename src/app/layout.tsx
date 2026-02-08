@@ -1,4 +1,3 @@
-
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
@@ -43,7 +42,7 @@ export default function RootLayout({
             if ('serviceWorker' in navigator) {
               window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/sw.js').then(function(reg) {
-                  console.log('ServiceWorker registered successfully');
+                  console.log('ServiceWorker active and ready for offline use');
                 }).catch(function(err) {
                   console.log('ServiceWorker registration failed:', err);
                 });
