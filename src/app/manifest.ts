@@ -7,7 +7,6 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: 'أسامة موبايل',
     description: 'نظام إدارة صيانة الموبايل المتقدم مع دعم الباركود وتطبيق ويب (PWA).',
     start_url: '/',
-    scope: '/',
     display: 'standalone',
     background_color: '#FFFFFF',
     theme_color: '#23b936',
