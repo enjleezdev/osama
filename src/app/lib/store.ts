@@ -1,146 +1,155 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  onSnapshot, 
-  query, 
-  where,
-  writeBatch
-} from 'firebase/firestore';
-import { db, auth } from '@/lib/firebase';
-import { onAuthStateChanged, User } from 'firebase/auth';
+import { supabase } from '@/lib/supabase';
 import { DeviceRecord } from './types';
 
-const COLLECTION_NAME = 'devices';
+const STORAGE_KEY = 'osama_mobile_records';
 
 export function useDeviceStore() {
   const [records, setRecords] = useState<DeviceRecord[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isOnline, setIsOnline] = useState(true);
 
+  // 1. تحميل البيانات من localStorage فوراً عند البدء (Offline First)
   useEffect(() => {
-    // التحقق الفوري من المستخدم الحالي (يعمل أوفلاين إذا كان مسجلاً سابقاً)
-    if (auth.currentUser) {
-      setCurrentUser(auth.currentUser);
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      setRecords(JSON.parse(saved));
     }
-    
-    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-      if (!user) {
-        // إذا لم يكن هناك مستخدم، نعتبر المحمل انتهى لنعرض واجهة فارغة أو تسجيل الدخول
-        setIsLoaded(true);
-      }
-    });
-    return () => unsubscribeAuth();
+    setIsLoaded(true);
+    setIsOnline(navigator.onLine);
+
+    const handleOnline = () => {
+      setIsOnline(true);
+      syncWithSupabase();
+    };
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    // المزامنة الأولية عند التحميل
+    if (navigator.onLine) {
+      syncWithSupabase();
+    }
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, []);
 
-  useEffect(() => {
-    if (!currentUser) return;
+  // 2. دالة المزامنة مع Supabase
+  const syncWithSupabase = async () => {
+    try {
+      // جلب آخر البيانات من السحابة
+      const { data, error } = await supabase
+        .from('devices')
+        .select('*')
+        .order('entryDate', { ascending: false });
 
-    const q = query(
-      collection(db, COLLECTION_NAME), 
-      where('userId', '==', currentUser.uid)
+      if (error) throw error;
+
+      if (data) {
+        setRecords(data);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      }
+    } catch (e) {
+      console.error("Sync Error:", e);
+    }
+  };
+
+  // 3. إضافة سجل جديد (Local + Remote)
+  const addRecord = async (record: Omit<DeviceRecord, 'id' | 'entryDate' | 'status' | 'userId'>) => {
+    const newRecord: DeviceRecord = {
+      ...record,
+      id: crypto.randomUUID(),
+      userId: 'anonymous', // يمكن تحسينها لاحقاً بنظام تسجيل دخول
+      entryDate: new Date().toISOString(),
+      status: 'Active',
+    };
+
+    // التحديث المحلي الفوري
+    const updatedRecords = [newRecord, ...records];
+    setRecords(updatedRecords);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedRecords));
+
+    // المحاولة في السحاب إذا كان متصلاً
+    if (navigator.onLine) {
+      try {
+        await supabase.from('devices').insert([newRecord]);
+      } catch (e) {
+        console.error("Cloud insert failed, will sync later:", e);
+      }
+    }
+
+    return newRecord;
+  };
+
+  // 4. أرشفة سجل
+  const archiveRecord = async (id: string) => {
+    const updatedRecords = records.map(r => 
+      r.id === id ? { ...r, status: 'Archived' as const, archivedDate: new Date().toISOString() } : r
     );
     
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const updatedRecords = snapshot.docs.map(doc => ({
-        ...doc.data(),
-        id: doc.id,
-      })) as DeviceRecord[];
-      
-      // الترتيب محلياً لتجنب مشاكل الفهرسة (Indexes) في البداية
-      const sortedRecords = updatedRecords.sort((a, b) => 
-        new Date(b.entryDate).getTime() - new Date(a.entryDate).getTime()
-      );
-      
-      setRecords(sortedRecords);
-      setIsLoaded(true);
-    }, (error) => {
-      console.error("Firestore Offline Error:", error);
-      // حتى لو فشل الاتصال، نعتبره "محمل" ليعرض ما في الذاكرة المحلية
-      setIsLoaded(true);
-    });
+    setRecords(updatedRecords);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedRecords));
 
-    return () => unsubscribe();
-  }, [currentUser]);
-
-  const addRecord = async (record: Omit<DeviceRecord, 'id' | 'entryDate' | 'status' | 'userId'>) => {
-    const user = currentUser || auth.currentUser;
-    if (!user) throw new Error("يجب تسجيل الدخول أولاً");
-    
-    try {
-      const newRecordData = {
-        ...record,
-        userId: user.uid,
-        entryDate: new Date().toISOString(),
-        status: 'Active' as const,
-      };
-      const docRef = await addDoc(collection(db, COLLECTION_NAME), newRecordData);
-      return { id: docRef.id, ...newRecordData };
-    } catch (e) {
-      console.error("Error adding document: ", e);
-      throw e;
+    if (navigator.onLine) {
+      try {
+        await supabase
+          .from('devices')
+          .update({ status: 'Archived', archivedDate: new Date().toISOString() })
+          .eq('id', id);
+      } catch (e) {
+        console.error("Cloud update failed:", e);
+      }
     }
   };
 
-  const archiveRecord = async (id: string) => {
-    try {
-      const docRef = doc(db, COLLECTION_NAME, id);
-      await updateDoc(docRef, {
-        status: 'Archived',
-        archivedDate: new Date().toISOString()
-      });
-    } catch (e) {
-      console.error("Error archiving document: ", e);
-    }
-  };
-
+  // 5. حذف سجل
   const deleteRecord = async (id: string) => {
-    try {
-      await deleteDoc(doc(db, COLLECTION_NAME, id));
-    } catch (e) {
-      console.error("Error deleting document: ", e);
+    const updatedRecords = records.filter(r => r.id !== id);
+    setRecords(updatedRecords);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedRecords));
+
+    if (navigator.onLine) {
+      try {
+        await supabase.from('devices').delete().eq('id', id);
+      } catch (e) {
+        console.error("Cloud delete failed:", e);
+      }
     }
   };
 
   const clearArchive = async () => {
-    try {
-      const archivedRecords = records.filter(r => r.status === 'Archived');
-      const batch = writeBatch(db);
-      
-      archivedRecords.forEach(record => {
-        batch.delete(doc(db, COLLECTION_NAME, record.id));
-      });
-      
-      await batch.commit();
-    } catch (e) {
-      console.error("Error clearing archive: ", e);
+    const updatedRecords = records.filter(r => r.status !== 'Archived');
+    setRecords(updatedRecords);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedRecords));
+
+    if (navigator.onLine) {
+      try {
+        await supabase.from('devices').delete().eq('status', 'Archived');
+      } catch (e) {
+        console.error("Cloud clear failed:", e);
+      }
     }
   };
 
   const findByBarcode = useCallback((barcode: string) => {
-    const cleanBarcode = barcode.trim();
-    return records.find(r => r.barcode.trim() === cleanBarcode && r.status === 'Active');
+    return records.find(r => r.barcode.trim() === barcode.trim() && r.status === 'Active');
   }, [records]);
-
-  const getActiveRecords = () => records.filter(r => r.status === 'Active');
-  const getArchivedRecords = () => records.filter(r => r.status === 'Archived');
 
   return {
     records,
-    isLoaded: isLoaded, // إظهار المحتوى بمجرد اكتمال الفحص الأولي
+    isLoaded,
+    isOnline,
     addRecord,
     archiveRecord,
     deleteRecord,
     clearArchive,
-    getActiveRecords,
-    getArchivedRecords,
-    findByBarcode,
-    userId: currentUser?.uid
+    findByBarcode
   };
 }
