@@ -19,32 +19,34 @@ export function useDeviceStore() {
       setRecords(JSON.parse(saved));
     }
     setIsLoaded(true);
-    setIsOnline(navigator.onLine);
+    
+    if (typeof window !== 'undefined') {
+      setIsOnline(navigator.onLine);
 
-    const handleOnline = () => {
-      setIsOnline(true);
-      syncWithSupabase();
-    };
-    const handleOffline = () => setIsOnline(false);
+      const handleOnline = () => {
+        setIsOnline(true);
+        syncWithSupabase();
+      };
+      const handleOffline = () => setIsOnline(false);
 
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+      window.addEventListener('online', handleOnline);
+      window.addEventListener('offline', handleOffline);
 
-    // المزامنة الأولية عند التحميل
-    if (navigator.onLine) {
-      syncWithSupabase();
+      // المزامنة الأولية إذا كان متصلاً
+      if (navigator.onLine) {
+        syncWithSupabase();
+      }
+
+      return () => {
+        window.removeEventListener('online', handleOnline);
+        window.removeEventListener('offline', handleOffline);
+      };
     }
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
   }, []);
 
-  // 2. دالة المزامنة مع Supabase
+  // 2. دالة المزامنة مع Supabase (جلب أحدث البيانات)
   const syncWithSupabase = async () => {
     try {
-      // جلب آخر البيانات من السحابة
       const { data, error } = await supabase
         .from('devices')
         .select('*')
@@ -61,17 +63,17 @@ export function useDeviceStore() {
     }
   };
 
-  // 3. إضافة سجل جديد (Local + Remote)
+  // 3. إضافة سجل جديد (محلي + محاولة سحابية)
   const addRecord = async (record: Omit<DeviceRecord, 'id' | 'entryDate' | 'status' | 'userId'>) => {
     const newRecord: DeviceRecord = {
       ...record,
       id: crypto.randomUUID(),
-      userId: 'anonymous', // يمكن تحسينها لاحقاً بنظام تسجيل دخول
+      userId: 'anonymous_user', 
       entryDate: new Date().toISOString(),
       status: 'Active',
     };
 
-    // التحديث المحلي الفوري
+    // التحديث المحلي الفوري (عشان يظهر في الشاشة فوراً)
     const updatedRecords = [newRecord, ...records];
     setRecords(updatedRecords);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedRecords));
