@@ -32,7 +32,6 @@ export function useDeviceStore() {
       window.addEventListener('online', handleOnline);
       window.addEventListener('offline', handleOffline);
 
-      // المزامنة الأولية إذا كان متصلاً
       if (navigator.onLine) {
         syncWithSupabase();
       }
@@ -68,12 +67,12 @@ export function useDeviceStore() {
     const newRecord: DeviceRecord = {
       ...record,
       id: crypto.randomUUID(),
-      userId: 'anonymous_user', 
+      userId: 'default_user', 
       entryDate: new Date().toISOString(),
       status: 'Active',
     };
 
-    // التحديث المحلي الفوري (عشان يظهر في الشاشة فوراً)
+    // التحديث المحلي الفوري
     const updatedRecords = [newRecord, ...records];
     setRecords(updatedRecords);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedRecords));
