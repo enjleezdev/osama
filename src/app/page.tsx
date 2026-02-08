@@ -23,7 +23,8 @@ import {
   X,
   Keyboard,
   Search,
-  AlertTriangle
+  AlertTriangle,
+  CheckCircle2
 } from 'lucide-react';
 import { 
   Dialog, 
@@ -106,20 +107,18 @@ export default function Home() {
     <div className="flex h-screen items-center justify-center bg-white overflow-hidden p-6">
       <div className="flex flex-row items-center gap-6 relative">
         <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full scale-150 animate-pulse-slow"></div>
-        
         <div className="flex items-center gap-6 relative z-10">
           <div className="relative group animate-[crawl_4s_linear_infinite]">
             <Snail className="w-20 h-20 text-primary relative z-10" />
             <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-14 h-2 bg-black/10 blur-[4px] rounded-[100%] z-0"></div>
           </div>
-          
           <div className="flex flex-col">
             <p className="text-4xl md:text-6xl font-black text-primary tracking-tighter drop-shadow-sm flex items-center gap-3">
               شيل الصبر
               <span className="flex gap-1.5 mt-4">
-                <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce [animation-duration:0.8s]"></span>
-                <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce [animation-duration:0.8s] [animation-delay:0.2s]"></span>
-                <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce [animation-duration:0.8s] [animation-delay:0.4s]"></span>
+                <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce"></span>
+                <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce [animation-delay:0.4s]"></span>
               </span>
             </p>
           </div>
@@ -131,9 +130,7 @@ export default function Home() {
   const activeCount = records.filter(r => r.status === 'Active').length;
 
   return (
-    <div className="min-h-screen bg-transparent text-foreground flex flex-col selection:bg-primary/30 font-body relative">
-      <div className="fixed top-0 left-0 right-0 h-2 z-[60] opacity-30"></div>
-      
+    <div className="min-h-screen bg-transparent text-foreground flex flex-col font-body relative">
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] right-[-10%] w-[50%] aspect-square rounded-full bg-primary/5 blur-[120px]"></div>
         <div className="absolute bottom-[-10%] left-[-10%] w-[50%] aspect-square rounded-full bg-accent/5 blur-[120px]"></div>
@@ -172,8 +169,8 @@ export default function Home() {
               <Download className="w-5 h-5" />
             </Button>
           )}
-          <div className="w-10 h-10 bg-primary/10 rounded-2xl flex items-center justify-center text-primary border border-primary/20 relative group overflow-hidden">
-            <Zap className="w-5 h-5 fill-current animate-pulse relative z-10" />
+          <div className="w-10 h-10 bg-primary/10 rounded-2xl flex items-center justify-center text-primary border border-primary/20">
+            <Zap className="w-5 h-5 fill-current animate-pulse" />
           </div>
         </div>
       </header>
@@ -181,18 +178,14 @@ export default function Home() {
       <main className="flex-1 w-full max-w-2xl mx-auto p-6 pb-24">
         {activeSection === 'Menu' && (
           <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            {/* مربع الباركود بالألوان الأربعة */}
             <div className="relative group">
               <div className="absolute inset-0 bg-[#413465]/30 blur-2xl rounded-[3rem] group-hover:bg-[#413465]/40 transition-all"></div>
               <button 
                 onClick={() => setActiveSection('Scanner')}
                 className="relative w-full aspect-video md:aspect-[21/9] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-95 group border-4 border-white/5"
-                style={{
-                  backgroundColor: '#413465'
-                }}
+                style={{ backgroundColor: '#413465' }}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
-                
                 <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-md border border-white/10 animate-float shadow-2xl">
                   <ScanBarcode className="w-10 h-10" style={{ color: '#7ec2d0' }} />
                 </div>
@@ -200,11 +193,7 @@ export default function Home() {
                   <h2 className="text-2xl font-black" style={{ color: '#93bfc7' }}>امسح الباركود</h2>
                   <p className="text-white/70 text-sm font-bold mt-1">فتاح يا عليم رزاق يا كريم</p>
                 </div>
-                {/* الخط المتحرك باللون المطلوب */}
-                <div 
-                  className="absolute left-0 right-0 h-1.5 shadow-[0_0_20px_rgba(250,181,60,0.7)] animate-[scan_1.2s_infinite] pointer-events-none" 
-                  style={{ backgroundColor: '#fab53c' }}
-                ></div>
+                <div className="absolute left-0 right-0 h-1.5 shadow-[0_0_20px_rgba(250,181,60,0.7)] animate-[scan_1.2s_infinite] pointer-events-none" style={{ backgroundColor: '#fab53c' }}></div>
               </button>
             </div>
 
@@ -222,7 +211,7 @@ export default function Home() {
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-center justify-between px-2 relative">
+              <div className="flex items-center justify-between px-2">
                 <h3 className="text-xl font-black flex items-center gap-2">
                   <div className="w-2 h-8 bg-primary rounded-full"></div>
                   لوحة العمل الحالية
@@ -243,22 +232,22 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() => setActiveSection('Archive')}
-                className="glass-card h-32 rounded-[2.5rem] flex flex-col items-center justify-center gap-2 group hover:bg-white hover:shadow-2xl transition-all border-none relative overflow-hidden shadow-md"
+                className="glass-card h-32 rounded-[2.5rem] flex flex-col items-center justify-center gap-2 group hover:bg-white hover:shadow-2xl transition-all border-none shadow-md"
               >
-                <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform relative z-10">
+                <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                   <History className="w-6 h-6" />
                 </div>
-                <span className="text-sm font-black relative z-10">الأرشيف</span>
+                <span className="text-sm font-black">الأرشيف</span>
               </button>
               
               <button
                 onClick={() => setActiveSection('Reports')}
-                className="glass-card h-32 rounded-[2.5rem] flex flex-col items-center justify-center gap-2 group hover:bg-white hover:shadow-2xl transition-all border-none relative overflow-hidden shadow-md"
+                className="glass-card h-32 rounded-[2.5rem] flex flex-col items-center justify-center gap-2 group hover:bg-white hover:shadow-2xl transition-all border-none shadow-md"
               >
-                <div className="w-12 h-12 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform relative z-10">
+                <div className="w-12 h-12 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                   <BarChart3 className="w-6 h-6" />
                 </div>
-                <span className="text-sm font-black relative z-10">التقارير</span>
+                <span className="text-sm font-black">التقارير</span>
               </button>
             </div>
 
@@ -282,7 +271,7 @@ export default function Home() {
                 </div>
                 <Button 
                   type="submit" 
-                  className="w-full h-16 bg-accent hover:bg-accent/90 text-white text-lg font-black rounded-2xl shadow-xl shadow-accent/20 transition-all active:scale-95"
+                  className="w-full h-16 bg-accent hover:bg-accent/90 text-white text-lg font-black rounded-2xl shadow-xl shadow-accent/20"
                   disabled={!manualInput.trim()}
                 >
                   تحقق من الرقم
@@ -299,17 +288,11 @@ export default function Home() {
               records={records} 
               onDelete={(id) => {
                 deleteRecord(id);
-                toast({
-                  title: "تم الحذف",
-                  description: "تم حذف السجل نهائياً من الأرشيف.",
-                });
+                toast({ title: "تم الحذف", description: "تم حذف السجل نهائياً." });
               }}
               onClearAll={() => {
                 clearArchive();
-                toast({
-                  title: "تم المسح",
-                  description: "تم مسح الأرشيف بالكامل.",
-                });
+                toast({ title: "تم المسح", description: "تم مسح الأرشيف بالكامل." });
               }}
             />
           )}
@@ -318,14 +301,9 @@ export default function Home() {
       </main>
 
       <footer className="py-8 px-6 text-center border-t bg-white/50 backdrop-blur-sm rounded-t-[3rem] relative overflow-hidden">
-        <p className="text-sm text-gray-500 font-bold flex flex-col items-center gap-2 relative z-10">
+        <p className="text-sm text-gray-500 font-bold flex flex-col items-center gap-2">
           <span>تصميم وتطوير بكل ❤️ بواسطة</span>
-          <a 
-            href="https://tech.enjleez.cloud/ar" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-pink-500 hover:text-pink-600 transition-all font-black text-lg underline-offset-8 hover:underline"
-          >
+          <a href="https://tech.enjleez.cloud/ar" target="_blank" rel="noopener noreferrer" className="text-pink-500 hover:text-pink-600 transition-all font-black text-lg underline-offset-8 hover:underline">
             ENJLEEZ TECH
           </a>
         </p>
@@ -333,9 +311,6 @@ export default function Home() {
 
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent className="w-[95vw] max-w-xl max-h-[90vh] overflow-y-auto rounded-[3rem] border-none shadow-2xl p-0">
-          <DialogHeader className="p-6 pb-0 sr-only">
-            <DialogTitle>تسجيل جهاز جديد</DialogTitle>
-          </DialogHeader>
           <ServiceForm 
             initialBarcode={scannedBarcode || ''} 
             onSubmit={onFormSubmit}
@@ -349,14 +324,10 @@ export default function Home() {
 
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
         <DialogContent className="w-[92vw] max-md p-0 overflow-hidden border-none shadow-2xl rounded-[3rem]">
-          <DialogHeader className="p-6 pb-0 sr-only">
-            <DialogTitle>بيانات الجهاز في النظام</DialogTitle>
-          </DialogHeader>
           {lookupDevice && (
             <div className="bg-white text-right">
               <div className="bg-primary p-8 text-white relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
-                
                 <div className="flex flex-col items-center mt-6 relative z-10">
                   <div className="w-20 h-20 bg-white/20 rounded-[2rem] flex items-center justify-center mb-4 backdrop-blur-md border border-white/30 animate-float">
                     <ShieldCheck className="w-10 h-10" />
@@ -369,17 +340,17 @@ export default function Home() {
               
               <div className="p-8 space-y-6">
                 <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-1">
+                  <div className="space-y-1 text-right">
                     <p className="text-[10px] uppercase text-muted-foreground font-black tracking-widest">العميل</p>
                     <p className="font-black text-base">{lookupDevice.customerName}</p>
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-1 text-right">
                     <p className="text-[10px] uppercase text-muted-foreground font-black tracking-widest">نوع الخدمة</p>
                     <p className="font-black text-base text-primary">{lookupDevice.serviceType}</p>
                   </div>
                 </div>
 
-                <div className="bg-gray-50/50 p-4 rounded-[1.5rem] border border-dashed border-gray-200">
+                <div className="bg-gray-50/50 p-4 rounded-[1.5rem] border border-dashed border-gray-200 text-right">
                   <p className="text-[10px] uppercase text-muted-foreground font-black mb-2 tracking-widest">ملاحظات الفني</p>
                   <p className="text-sm text-gray-700 leading-relaxed font-bold">{lookupDevice.description || 'لا توجد ملاحظات إضافية'}</p>
                 </div>
@@ -387,8 +358,9 @@ export default function Home() {
                 <div className="flex flex-col gap-3 pt-4">
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button className="w-full bg-primary hover:bg-primary/90 h-16 text-lg font-black rounded-[1.5rem] shadow-xl shadow-primary/20">
-                        إتمام وتسليم الجهاز
+                      <Button className="w-full bg-primary hover:bg-primary/90 h-16 text-lg font-black rounded-[1.5rem] shadow-xl shadow-primary/20 gap-2">
+                        <CheckCircle2 className="w-6 h-6" />
+                        إتمام وتسليم الهاتف
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent className="rounded-[2.5rem] border-none shadow-2xl">
@@ -406,10 +378,7 @@ export default function Home() {
                           onClick={() => {
                             archiveRecord(lookupDevice.id);
                             setShowDetailsDialog(false);
-                            toast({
-                              title: "تم التسليم بنجاح ✨",
-                              description: "تم نقل السجل إلى الأرشيف.",
-                            });
+                            toast({ title: "تم التسليم بنجاح ✨", description: "تم نقل السجل إلى الأرشيف." });
                           }} 
                           className="bg-primary hover:bg-primary/90 text-white font-black rounded-xl h-12 flex-1"
                         >

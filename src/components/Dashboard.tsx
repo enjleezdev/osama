@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -5,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { BatteryCharging, Settings, Code, Archive, User, Calendar, Smartphone, Box } from 'lucide-react';
+import { BatteryCharging, Settings, Code, Archive, User, Calendar, Smartphone, Box, CheckCircle2 } from 'lucide-react';
 import { DeviceRecord } from '@/app/lib/types';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -23,9 +24,9 @@ export function Dashboard({ records, onArchive }: DashboardProps) {
   const software = activeRecords.filter(r => r.serviceType === 'Software');
 
   const categories = [
-    { id: 'Charging', label: 'شحن', icon: BatteryCharging, color: 'text-orange-500', bg: 'bg-orange-50', list: charging },
-    { id: 'Maintenance', label: 'صيانة', icon: Settings, color: 'text-blue-500', bg: 'bg-blue-50', list: maintenance },
-    { id: 'Software', label: 'برمجة', icon: Code, color: 'text-primary', bg: 'bg-green-50', list: software },
+    { id: 'Maintenance', label: 'صيانة هاردوير', icon: Settings, color: 'text-blue-500', bg: 'bg-blue-50', list: maintenance },
+    { id: 'Charging', label: 'شحن الهاتف', icon: BatteryCharging, color: 'text-orange-500', bg: 'bg-orange-50', list: charging },
+    { id: 'Software', label: 'برمجة / سوفت', icon: Code, color: 'text-primary', bg: 'bg-green-50', list: software },
   ];
 
   return (
@@ -52,7 +53,7 @@ export function Dashboard({ records, onArchive }: DashboardProps) {
         {categories.map((cat) => (
           <TabsContent key={cat.id} value={cat.id} className="space-y-4 outline-none">
             {cat.list.length === 0 ? (
-              <div className="flex flex-col items-center justify-center p-12 glass-card rounded-[2.5rem] border-dashed border-2 text-center">
+              <div className="flex flex-col items-center justify-center p-12 glass-card rounded-[2.5rem] border-dashed border-2 border-gray-200 text-center">
                 <div className="w-16 h-16 bg-gray-100 rounded-[1.5rem] flex items-center justify-center mb-4">
                   <Box className="w-8 h-8 text-gray-300" />
                 </div>
@@ -62,19 +63,19 @@ export function Dashboard({ records, onArchive }: DashboardProps) {
             ) : (
               <div className="grid grid-cols-1 gap-4">
                 {cat.list.map((record) => (
-                  <Card key={record.id} className="glass-card rounded-[2rem] overflow-hidden group hover:scale-[1.01] transition-all border-none relative">
+                  <Card key={record.id} className="glass-card rounded-[2rem] overflow-hidden group hover:scale-[1.01] transition-all border-none relative shadow-md">
                     <div className="flex">
                       <div className={cn("w-2", cat.bg.replace('50', '500'))} />
                       <div className="flex-1 p-6 text-right">
                         <div className="flex justify-between items-start mb-4">
                           <Button 
-                            variant="ghost" 
+                            variant="default" 
                             size="sm" 
-                            className="rounded-xl text-gray-400 hover:text-primary hover:bg-primary/10 font-black h-10 px-4"
+                            className="rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white font-black h-10 px-4 transition-all"
                             onClick={() => onArchive(record.id)}
                           >
-                            <Archive className="w-4 h-4 ml-2" />
-                            إتمام
+                            <CheckCircle2 className="w-4 h-4 ml-2" />
+                            إتمام وتسليم
                           </Button>
                           <div className="text-right">
                             <div className="flex flex-row-reverse items-center gap-2 mb-1">
@@ -97,11 +98,6 @@ export function Dashboard({ records, onArchive }: DashboardProps) {
                             </p>
                           </div>
                         )}
-                        
-                        {/* Progress visual */}
-                        <div className="mt-4 h-1 w-full bg-gray-100 rounded-full overflow-hidden">
-                          <div className={cn("h-full animate-pulse", cat.bg.replace('50', '500'))} style={{ width: '40%' }}></div>
-                        </div>
                       </div>
                     </div>
                   </Card>
