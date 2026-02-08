@@ -9,18 +9,18 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: '/',
     scope: '/',
     display: 'standalone',
-    background_color: '#F4F4F4',
-    theme_color: '#0C2B4E',
+    background_color: '#FFFFFF',
+    theme_color: '#23b936',
     orientation: 'portrait',
     icons: [
       {
-        src: 'https://placehold.co/192x192/0C2B4E/FFFFFF?text=Osama',
+        src: 'https://placehold.co/192x192/23b936/FFFFFF?text=Osama',
         sizes: '192x192',
         type: 'image/png',
         purpose: 'maskable'
       },
       {
-        src: 'https://placehold.co/512x512/0C2B4E/FFFFFF?text=Osama',
+        src: 'https://placehold.co/512x512/23b936/FFFFFF?text=Osama',
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any'

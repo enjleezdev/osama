@@ -1,3 +1,4 @@
+
 const CACHE_NAME = 'osama-mobile-v1';
 const ASSETS_TO_CACHE = [
   '/',
